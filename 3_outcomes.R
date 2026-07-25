@@ -22,8 +22,13 @@ calc_0.1 <- log10(1.1)
 calc_400 <- log10(401)
 
 #Prep age for counterfactual construction
-age_mean <- mean(data_expand$age)
-age_SD <- sd(data_expand$age)
+#Prep age for counterfactual construction
+age_mean <- 56
+age_SD <- 10
+if(exists("data_expand")){
+  age_mean <- mean(data_expand$age)
+  age_SD <- sd(data_expand$age)
+}
 counterfactual_age_zscore <- (counterfactual_age - age_mean) / age_SD
 counterfactual_age <- age_mean
 

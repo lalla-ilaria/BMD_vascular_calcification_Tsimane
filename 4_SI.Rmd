@@ -36,6 +36,7 @@ library(officer)#to save word tables
 library(flextable)
 library(patchwork)
 library(cowplot)
+
 #plotting parameters
 malecol <- "turquoise4"
 femalecol <- "darkorange"
@@ -56,16 +57,29 @@ pointsizeval <- 10
 
 
 source("0_functions.R")
+#if testing the following code only
+source("1_bis_simulate_data_to_test_code.R")
+#if original data are available
+#source("1_data_process.R")
+#to use simulated data
+data_to_use <- dat_sim
+#to use real data (if available)
+#data_to_use <- all_dat
+
 
 ```
 
 ```{r prep_envir, cache=TRUE, include=FALSE}
-source("1_data_process.R")
 source("2_analysis.R")
 
 #Prep age for counterfactual construction
-age_mean <- mean(data_expand$age)
-age_SD <- sd(data_expand$age)
+age_mean <- 56
+age_SD <- 10
+if(exists(data_expand)){
+  age_mean <- mean(data_expand$age)
+  age_SD <- sd(data_expand$age)
+}
+
 counterfactual_age_zscore <- (counterfactual_age - age_mean) / age_SD
 
 #extract samples
@@ -87,7 +101,6 @@ post_5 <- lapply(fits_5, extract.samples)
 post_6 <- lapply(fits_6, extract.samples)
 
 
-save.image("debug_workspace.RData")
 ```
 
 # Materials and Methods

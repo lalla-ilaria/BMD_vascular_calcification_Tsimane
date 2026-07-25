@@ -19,6 +19,12 @@ counterfactual_age <- 60
 gq <- list() #generated quantities
 
 source("0_functions.R")
-source("1_data_process.R")
+source("1_bis_simulate_data_to_test_code.R")
+#if original data are available
+#source("1_data_process.R")
+#to use simulated data
+data_to_use <- dat_sim
+#to use real data (if available)
+#data_to_use <- all_dat
 source("2_analysis.R")
 source("3_outcomes.R")

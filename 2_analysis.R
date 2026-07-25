@@ -1,6 +1,5 @@
 
 
-
 warmup <- 500
 iter <- 1000
 
@@ -15,7 +14,7 @@ fits_nosex <- list()
 for (m in 1:length(calc_names)) {
   
   dat_nosex <- make_dat(
-    all_dat,
+    data_to_use,
     imput = TRUE,
     sex = F,
     inflam_vars = "all",
@@ -32,7 +31,7 @@ fits_c <- list()
 for (m in 1:length(calc_names)) {
   
   dat_c <- make_dat(
-    all_dat,
+    data_to_use,
     imput = TRUE,
     inflam_vars = "all",
     calc_vars = calc_names[m]
@@ -50,7 +49,7 @@ fits_nosex_i <- list()
 for (m in 1:length(inflam_names)) {
   
   dat_nosex <- make_dat(
-    all_dat,
+    data_to_use,
     imput = FALSE,
     sex = F,
     inflam_vars = inflam_names[m],
@@ -66,7 +65,7 @@ for (m in 1:length(inflam_names)) {
 # for (m in 1:length(inflam_names)) {
 #   
 #   dat_i <- make_dat(
-#     all_dat,
+#     data_to_use,
 #     imput = FALSE,
 #     inflam_vars = inflam_names[m]
 #   )
@@ -77,7 +76,7 @@ for (m in 1:length(inflam_names)) {
 
 #analysis with all calcification parameters, all inflammation parameters, all covariates, without imputing missing inflamation data from normal(0,1)
 # dat_nosex_noimput <- make_dat(
-#   all_dat,
+#   data_to_use,
 #   imput = FALSE,
 #   sex = F
 # )
@@ -87,7 +86,7 @@ for (m in 1:length(inflam_names)) {
 
 
 dat_noimput <- make_dat(
-  all_dat,
+  data_to_use,
   imput = FALSE
 )
 
@@ -98,7 +97,7 @@ fits_noimput <- cstan( file= "models/1bmd-all_i_c_2beta.stan" , data=dat_noimput
 #2
 
 dat_nosex <- make_dat(
-  all_dat,
+  data_to_use,
   imput = TRUE,
   inflam_vars = "all",
   calc_vars = "all",
@@ -118,7 +117,7 @@ fits_2a_i <- list()
 for (m in 1:length(inflam_names)) {
   
   dat_nosex <- make_dat(
-    all_dat,
+    data_to_use,
     imput = FALSE,
     sex = F,
     inflam_vars = inflam_names[m],
@@ -131,7 +130,7 @@ for (m in 1:length(inflam_names)) {
 
 #3
 dat_nosex <- make_dat(
-  all_dat,
+  data_to_use,
   imput = TRUE,
   sex = F,
   inflam_vars = "all",
@@ -155,7 +154,7 @@ calc_marks <- colnames(dat$calc_markers)
 for (m in 1:length(calc_marks)) {
 
   dat_raw <- make_dat(
-    all_dat,
+    data_to_use,
     imput = TRUE,
     inflam_vars = "all",
     calc_vars = "raw_calc",
@@ -176,7 +175,7 @@ fits_4_pzln_i <- list()
 for (m in 1:length(calc_marks)) {
   for(i in 1:length(inflam_names)){
     dat_raw <- make_dat(
-      all_dat,
+      data_to_use,
       imput = FALSE,
       inflam_vars = inflam_names[i],
       calc_vars = "raw_calc",
@@ -205,7 +204,7 @@ inflam_names <- colnames(dat$inflam_markers)
 fits_6 <- list()
 for (m in 1:length(inflam_names)) {
   dat_i <- make_dat(
-    all_dat,
+    data_to_use,
     imput = FALSE,
     inflam_vars = inflam_names[m],
     sex = F

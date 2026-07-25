@@ -12,7 +12,7 @@ make_dat <- function(df,
   if(!imput) {
     df <- df[complete.cases(df), ]
   } else {
-    df <- df[complete.cases(df[,c("ffm_z", "thoracic_fat_z", "log_cac_z", "log_tac_z", "log_aortic_arch_ca_z", "log_crp_mean_z")]), ]
+    df <- df[complete.cases(df[,c("ffm_z", "thoracic_fat_z", "log_cac", "log_tac", "log_aac", "log_crp_mean_z")]), ]
   }
   
   miss_inflam <- which(
