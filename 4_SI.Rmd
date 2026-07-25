@@ -1677,31 +1677,12 @@ ft
 
 Adults with both lower BMD (<1 SD below the sex-specific mean) and any mild calcification (i.e., CAC, TAC, or AAC score ≥1 and <100 AU; hereafter “group 1”) are, on average, 10 years older than those without both conditions (group 3) but otherwise have similar (≤10% difference) anthropometric and metabolic profiles (Table \@ref(threeGroupComparison)). Group 1 shows higher thoracic vertebral fracture prevalence (48% vs. 26%) and less land under cultivation (35%) than group 3, although group 1 is small (n=21) and shows high variability in land clearance. Those with lower BMD and moderate/severe calcification (score ≥100 AU; group 2) are older still, seven years older than group 1 and 17 years older than group 3, but are otherwise similar to group 1. Despite their old age, group 2 shows a lower fracture prevalence than group 1 and only slightly higher prevalence than group 3, suggesting no clear monotonic relationship between calcification severity and fracture risk. Group 2 is composed of more women than group 3 (60% vs. 46%), cultivates less land (40%), and has higher systolic (5%) and diastolic (3%) blood pressure.
 
-```{r threeGroupComparison, tab.id =  "threeGroupComparison", tab.cap= "Descriptive statistics for select demographic, anthropometric, metabolic, skeletal, and economic variables by degree of arterial calcification across vascular beds and bone mineral density (BMD). Group 1 includes adults with any mild calcification (i.e. CAC, TAC, or AAC score ≥1 and <100 AU) and low BMD. Low BMD is indicated by a thoracic vertebral BMD <1 SD below the sex-specific mean. Group 2 includes adults with any moderate or severe calcification (i.e. score ≥100 AU) and low BMD. Group 3 includes all other adults in the sample. Subjects with variable arterial calcification scores across vascular beds are grouped according to their highest score."}
 
-#make groups in data expand
-data_expand$group <- "Other"
+```{r threeGroupComparison, tab.id =  "threeGroupComparison", tab.cap= "Descriptive statistics for select demographic, anthropometric, metabolic, skeletal, and economic variables by degree of arterial calcification across vascular beds and bone mineral density (BMD). Group 1 includes adults with any mild calcification (i.e. CAC, TAC, or AAC score ≥1 and <100 AU) and low BMD. Low BMD is indicated by a thoracic vertebral BMD <1 SD below the sex-specific mean. Group 2 includes adults with any moderate or severe calcification (i.e. score ≥100 AU) and low BMD. Group 3 includes all other adults in the sample. Subjects with variable arterial calcification scores across vascular beds are grouped according to their highest score.", eval=FALSE}
 
-mild_calc <-
-  (data_expand$cac > 0 & data_expand$cac < 400) |
-  (data_expand$tac > 0 & data_expand$tac < 400) |
-  (data_expand$aortic_arch_ca > 0 & data_expand$aortic_arch_ca < 400)
-
-data_expand$group[mild_calc & data_expand$bmd_z < -1] <- "Low BMD + mild"
-
-severe_calc <-
-  data_expand$cac >= 400 |
-  data_expand$tac >= 400 |
-  data_expand$aortic_arch_ca >= 400
-
-data_expand$group[severe_calc & data_expand$bmd_z < -1] <-"Low BMD + moderate/severe"
-
-data_expand$group[
-  data_expand$low_bmd == 1 &
-  data_expand$calc_cat == "moderate_severe"
-] <- "Low BMD + moderate/severe"
 
 #make table
+data_expand$group <- data_expand$group_lowbmd_any_calc_level
 tab <- bind_rows(
   make_row(data_expand, "age", "Age (years)"),
   make_row(data_expand, "male", "% female", binary = TRUE),
@@ -1797,11 +1778,11 @@ tab <- rbind(
 names(tab) <- c(
   "Variable",
   paste ("(1) Low BMD & mild calcification, \n N =", 
-         sum(data_expand$group == "Low BMD + mild")),
+         sum(data_expand$group_lowbmd_any_calc_level == "low bmd any calc mild")),
   paste ("(2) Low BMD & \n moderate/severe \n calcification, \n N =", 
-         sum(data_expand$group == "Low BMD + moderate/severe" )),
+         sum(data_expand$group_lowbmd_any_calc_level == "low bmd any calc mod.sev" )),
   paste("(3) Other, \n N =", 
-        sum(data_expand$group == "Other")),
+        sum(data_expand$group_lowbmd_any_calc_level == "other")),
   "1vs.2",
   "1vs.3",
   "2vs.3"
@@ -1842,7 +1823,7 @@ ft <- compose(ft, i = row_tibial, j = "Variable", part = "body",
 ft <- compose(ft, i = row_tareas, j = "Variable", part = "body",
   value = as_paragraph("Horticultural land under \n cultivation (tareas)", as_sup("3")))
 
-# --- footnote text, unchanged from your original ---
+# --- footnote text ---
 ft <- add_footer_lines(ft, values = "\u00b9 Assessed via Genant\u2019s semi-quantitative technique. Each vertebra is classified into one of five categories: normal (grade 0); mild fracture (grade 1; ~20-25% reduction in anterior, middle, and/or posterior vertebral height, and a 10\u201320% reduction in projected vertebral area); moderate fracture (grade 2; 25-40% reduction in any height and a 20\u201340% reduction in area); and severe fracture (grade 3; >40% reduction in any height and area). Each subject is assigned one grade representing a summary measure of all seven vertebrae. Subjects with >1 vertebral deformity are classified according to their most severe deformity.")
 ft <- add_footer_lines(ft, values = "\u00b2 Measured via quantitative ultrasonography (Sunlight MiniOmni). Higher values indicate higher bone stiffness.")
 ft <- add_footer_lines(ft, values = "\u00b3 Equivalent to an area of 100 m2.")

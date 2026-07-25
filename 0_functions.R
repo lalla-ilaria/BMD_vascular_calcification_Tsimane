@@ -110,9 +110,9 @@ percent_yes <- function(x){
 
 make_row <- function(dat, var, label, binary = FALSE){
   
-  g1 <- subset(dat, group == "Low BMD + mild")
-  g2 <- subset(dat, group == "Low BMD + moderate/severe")
-  g3 <- subset(dat, group == "Other")
+  g1 <- subset(dat, group == "low bmd any calc mild")
+  g2 <- subset(dat, group == "low bmd any calc mod.sev")
+  g3 <- subset(dat, group == "other")
   
   if(binary){
     
