@@ -1,7 +1,8 @@
 ---
 title: "Electronic Supplementary Material"
 author: "Bone demineralization accompanies vascular mineralization in physically active adults with few cardiometabolic risk factors"
-date: "2026-06-02"
+
+date: "2026-07-08"
 output:
   officedown::rdocx_document:
     tables:
@@ -117,7 +118,7 @@ Of the 731 Tsimane who received a CT scan, data from 507 (69%) were selected wit
 CT-measured vertebral BMD is increasingly used for osteoporosis screening because of its ability to provide three-dimensional information compared to traditional dual x-ray absorptiometry two-dimensional images. The left main coronary artery (LMCA) was set as the reference site to allow reproducible detection of a spinal level for use with cardiac CT scanning. The LMCA is covered in 100% of images and the field of view can be completely reconstructed. Therefore, it is an optimal reference point to locate the starting measurement level. The most common location of the LMCA origin is at the lower edge of T7. Intra-observer variability in BMD measurements using the same measurement technique in a different sample was tested on 120 scans by one observer from the Los Angeles Biomedical Research Institute, with one week intervals between the two readings. To measure inter-observer variability on 67 randomly selected scans, the results obtained by two radiologists from the Los Angeles Biomedical Research Institute who were blinded to all clinical information and prior measurements were compared using this other sample. Intra- and inter-observer variations in BMD measurements were 2.5% (Bland-Altman plot ratio: 1.00, 95% CI: 0.99–1.00) and 2.6% (Bland-Altman plot ratio: 1.00, 95% CI: 0.99–1.00), respectively.
 Typical multi-detector CT protocols used for evaluation of arterial calcification include imaging the chest in the reconstructed field of view, facilitating simultaneous evaluation of arterial calcium (measured here in the coronary arteries and thoracic aorta) and thoracic vertebral architecture (measured here via BMD) during a single examination without additional radiation exposure. The technician acquired a scan on each individual consisting of 30-40 2.5 mm slices ranging from the aortic arch to the diaphragm. Fields of view of 25 cm and 50 cm were used to image the entire heart and the ascending and descending aorta.
 A threshold of 130 Hounsfield Units (HU) was used as the threshold for detecting CAC. Regarding calcium scoring, a sub-sample of 100 scans were scored twice to assess intra-observer variability, which was low. The mean variance between the two scores was 1.4 Agatston Units (AU). Two patients changed categories: one from 0 to >0 and one from <100 to > 100 AU. Coefficients of variation for scan reads were 5.4%.
-Figure S \@ref(CTs) below shows how thoracic fat volume was measured from the chest CTs.
+Figure S\@ref(fig:CTs) below shows how thoracic fat volume was measured from the chest CTs.
 
 
 ```{r CTs, echo=FALSE, fig.cap="Axial view CT scan through the heart showing shading of epicardial fat (purple) and directly adjacent fat (gold) in a subject using QFAT software for quantification of thoracic fat volume (reproduced from: https://pubmed.ncbi.nlm.nih.gov/40918927/).", fig.height=4, fig.width=2}
@@ -169,7 +170,7 @@ plot(DAG)
 
 ## Data Analysis
 
-*Three outcomes with several specifications:* The DAG presented above helps us define the various estimands based on causal queries of interest, and corresponding model specifications. In line with our three study goals, we are estimating the direct, total, and partial effects of arterial calcification, inflammation, and thoracic fat on bone mineral density (BMD; goal 1). We are also estimating effects of inflammation and thoracic fat on arterial calcification (goal 2), and effects of thoracic fat on inflammation (goal 3). To do so, we specify multiple models, listed in Table \@ref(tab:tablemodels). Below, we provide details for each model.
+*Three outcomes with several specifications:* The DAG presented above helps us define the various estimands based on causal queries of interest, and corresponding model specifications. In line with our three study goals, we are estimating the direct, total, and partial effects of arterial calcification, inflammation, and thoracic fat on bone mineral density (BMD; goal 1). We are also estimating effects of inflammation and thoracic fat on arterial calcification (goal 2), and effects of thoracic fat on inflammation (goal 3). To do so, we specify multiple models, listed in Table S\@ref(tab:tablemodels). Below, we provide details for each model.
 
 ```{r tablemodelsold, tab.id = "tablemodels", tab.cap="List of model specifications and relative estimands (models 1, 2a, 2b, 3 and 6 are Gaussian linear regressions, models 4 and 5 are zero-inflated Poisson models).", eval=TRUE}
 
@@ -224,7 +225,7 @@ ft
 
 ### Bone Mineral Density as outcome
 
-*Estimands:* Model 1 permits estimation of the direct effects of all variables of interest (calcification, inflammation, and thoracic fat), plus the covariates age and fat-free mass. By removing the calcification parameters, in model 2a, we estimate both the total effect of inflammation and the indirect effect of thoracic fat passing through calcification. Similarly, in model 2b we estimate the indirect effect of thoracic fat passing through inflammation, by removing inflammation from the full control set. Model 3, which does not include either calcification or inflammation, permits estimation of the total effect of thoracic fat on BMD.
+*Estimands:* Model 1 permits estimation of the direct effects of all variables of interest (arterial calcification, inflammation, and thoracic fat), plus the covariates age and fat-free mass. By removing the arterial calcification parameters, in model 2a, we estimate both the total effect of inflammation and the indirect effect of thoracic fat passing through arterial calcification. Similarly, in model 2b we estimate the indirect effect of thoracic fat passing through inflammation, by removing inflammation from the full control set. Model 3, which does not include either arterial calcification or inflammation, permits estimation of the total effect of thoracic fat on BMD.
 
 
 *Model specification(s):*
@@ -243,7 +244,7 @@ BMD_i &\sim \text{Normal}(\mu_i,\sigma) \\
 \end{align}
 $$
 
-Alternative specifications remove both parameterizations relative to calcification (parameters $\beta_1$ and $\beta_2$, respectively signifying calcification presence or absence, and calcification amount (in Agatston Units), model 2a), the parameter for inflammation $\theta$ (model 2b) and both sets of parameters (model 3, which includes only age, fat-free mass and thoracic fat as predictors). 
+Alternative specifications remove both parameterizations relative to calcification (parameters $\beta_1$ and $\beta_2$, respectively signifying arterial calcification presence or absence, and calcification amount (in Agatston Units), model 2a), the parameter for inflammation $\theta$ (model 2b) and both sets of parameters (model 3, which includes only age, fat-free mass and thoracic fat as predictors). 
 
 *Priors:* For all models we employ weakly regularizing priors:
 $$
@@ -258,17 +259,18 @@ $$
 
 
 #### Sex differences 
-Sex enters the DAG by affecting fat-free mass and BMD directly. However, this does not clarify how sex should be included in the model, as sex may interact with the other variables to determine BMD (and interactions are not specifically represented in a DAG). We model sex by allowing it to vary how age impacts BMD, as the female skeleton is expected to show an accelerated decline in BMD associated with the transition to menopause. We are also interested in estimating the extent to which sex moderates the effect of calcification on BMD. Hence, we allow both γ and the two β parameters to vary between sexes. Additionally, we allow the intercept α to vary between sexes, so that the model can produce different expected values for the average female and average male.
-We run most models with both specifications: looking both at the unified patterns across sexes and at the differences between sexes. For parameters that do not vary across sexes (θ for inflammation, η for fat-free mass, etc.), we always consider models where the sexes are combined to produce a single estimate, whereas we consider results that both include and exclude sex differences when making inferences about effects of calcification or age on BMD.
+Sex enters the DAG by affecting fat-free mass and BMD directly. However, this does not clarify how sex should be included in the model, as sex may interact with the other variables to determine BMD, and interactions are not specifically represented in the DAG. We model sex by allowing it to vary how age impacts BMD, as the female skeleton is expected to show an accelerated decline in BMD associated with the transition to menopause. We are also interested in estimating the extent to which sex moderates the effect of arterial calcification on BMD. Hence, we allow both γ and the two β parameters to vary between sexes. Additionally, we allow the intercept α to vary between sexes, so that the model can produce different expected values for the average female and average male.
+We run most models with both specifications: looking both at the unified patterns across sexes and at the differences between sexes. For parameters that do not vary across sexes (θ for inflammation, η for fat-free mass, etc.), we always consider models where the sexes are combined to produce a single estimate, whereas we consider results that both include and exclude sex differences when making inferences about effects of arterial calcification or age on BMD.
 <!-- $\gamma$ and the two $\beta$ parameters to vary between sexes. Additionally, we allow the intercept $\alpha$ ($\theta$ for inflammation, $\eta$  -->
 
 #### Calcification presence and amount are modelled separately {#betas}
-`r 100*round(1-sum(dat$any_calc)/dat$N, 2)`\% Because different processes may lead to the initial onset of calcification compared to calcification progression, we model separately the effect of having any calcification vs. the effect of subsequent increases in the amount of calcification (what we call “severity” throughout the paper). $\text{Any Calc}_i$_i is a binary indicator taking value 1 when any calcification is present and 0 otherwise (the value becomes 1 if any of the three calcification markers are present when markers are considered together, see section \@ref(composite)). In addition, $\text{Calc}_i$ represents calcification severity. Consequently, $\beta_1$ estimates the discontinuous change in BMD associated with calcification presence, while $\beta_2$ estimates the slope relating BMD to calcification severity among individuals with calcification.
+<!-- `r 100*round(1-sum(dat$any_calc)/dat$N, 2)`\%  -->
+Because different processes may lead to the initial onset of arterial calcification compared to calcification progression, we model separately the effect of having any calcification vs. the effect of subsequent increases in the amount of calcification (what we call “severity” throughout the paper). $\text{Any Calc}_i$_i is a binary indicator taking value 1 when any calcification is present and 0 otherwise (the value becomes 1 if any of the three calcification markers are present when markers are considered together, see section \@ref(composite)). In addition, $\text{Calc}_i$ represents calcification severity. Consequently, $\beta_1$ estimates the discontinuous change in BMD associated with calcification presence, while $\beta_2$ estimates the slope relating BMD to calcification severity among individuals with calcification.
 
 Figures representing predicted changes in BMD by varying amounts of calcification, such as Figure 2 (main text), represent both expected BMD of an individual with no calcification (on the left side of the figure, mean and 89% PI of the posterior distribution) and expected change in BMD with increasing calcification severity, as a counterfactual curve on the right.
 
 #### Composite calcification and inflammation parameters {#composite}
-Our measures of arterial calcification are based on three vascular beds: the coronary arteries, the ascending and descending thoracic aorta (excluding the thoracic aortic arch), and the thoracic aortic arch. Measures of inflammation are based on four serum biomarkers: CRP, IL-1β, IL-6, and TNF-α. We are interested in examining both individual vascular beds and inflammatory biomarkers, as well as overall measures of arterial calcification and inflammation. Composite measures may better capture systemic patterns of calcification and inflammation, whereas analyses of individual vascular beds and biomarkers may reveal heterogeneity in local or site-specific associations. In order to combine the information provided by the different vascular beds and inflammatory biomarkers, we construct a composite measure of both calcification and inflammation within the statistical model, jointly with the regression on BMD. This means that the model learns the combination of markers that is most predictive of variation in BMD conditional on the other covariates. As a consequence, the composites are outcome-oriented rather than purely descriptive of the covariance structure, and approximate the global calcification and inflammation burden. Figure \@ref(compositesdatapoints) shows the estimated composite values for arterial calcification and inflammation for all individuals in our sample and the estimated change in BMD with varying levels of the composites. 
+Our measures of arterial calcification are based on three vascular beds: the coronary arteries, the ascending and descending thoracic aorta (excluding the thoracic aortic arch), and the thoracic aortic arch. Measures of inflammation are based on four serum biomarkers: CRP, IL-1β, IL-6, and TNF-α. We are interested in examining both individual vascular beds and inflammatory biomarkers, as well as overall measures of arterial calcification and inflammation. Composite measures may better capture more general patterns of arterial calcification and inflammation, whereas analyses of individual vascular beds and biomarkers may reveal heterogeneity in local associations. In order to combine the information provided by the different vascular beds and inflammatory biomarkers, we construct a composite measure of both arterial calcification and inflammation within the statistical model, jointly with the regression on BMD. This means that the model learns the combination of markers that is most predictive of variation in BMD conditional on the other covariates. As a consequence, the composites are outcome-oriented rather than purely descriptive of the covariance structure, and approximate the more general arterial calcification and inflammation burden. Figure S\@ref(fig:compositesdatapoints) shows the estimated composite values for arterial calcification and inflammation for all individuals in our sample and the estimated change in BMD with varying levels of the composites. 
 
 ```{r compositesdatapoints, fig.cap= "Estimated composite values for arterial calcification (A) and inflammation (B). Mean and 89% PI of posterior estimates of an individual’s composites are shown by points and lines, color coded by sex (N = 453). The values of the points on the y axis correspond to observed BMD. They are superimposed to the counterfactual prediction curves showing estimated change in BMD with varying levels of the composite score, where the line represents the mean and the shaded area the 89% PI of the posterior distribution for the slope.",  fig.height=3, fig.fullwidth=TRUE, warning=FALSE, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)}
 par(mfrow = c(1,2),mgp = c(1.5, 0.5, 0), mar = c(2.5, 2.2, 2, 1) + 0.1)
@@ -320,7 +322,7 @@ mtext("B", side = 3, line = 0, at = -2 )
 
 ```
 
-Note that composite scores correlate strongly with all arterial calcification markers (left column in Figure S \@ref(covairancecalc) below).
+Note that composite scores correlate strongly with all arterial calcification markers (left column in Figure S\@ref(fig:covairancecalc) below).
 
 ```{r covairancecalc, fig.cap= "Covariance between arterial calcification measures (from the coronary arteries (CAC), the ascending and descending thoracic aorta (excluding the thoracic aortic arch; TAC), and the aortic arch; AAC) and the calcification composite score (N = 453).", warning=FALSE, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)}
 calc_comp <- colMeans(post_c[[1]]$calc)
@@ -340,7 +342,7 @@ pairs(
 ```
 
 
-```{r inflam_markers_collinearity, fig.cap= "Covariance between inflammatory biomarkers and the inflammation composite score (N = 340).", warning=FALSE, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)}
+```{r inflam_markers_collinearity, fig.cap= "Covariance between inflammatory biomarkers and the inflammation composite score (N = 340; complete cases only).", warning=FALSE, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)}
 inflam_comp <- colMeans(post_noimput$inflam)
 
 pairs(
@@ -352,7 +354,7 @@ pairs(
 )
 ```
 
-The composite measures are built multiplying the markers' values by weights, which are drawn from a simplex distribution, with the composite values $\text{Calc}_i$ and $\text{Inflam}_i$ are estimated from the sum of the product of each calcification marker $m$ (or inflammation marker $k$) by the weights $\xi$ and $\zeta$,as follows:
+The composite measures are built multiplying the markers' values by weights, which are drawn from a simplex distribution. The composite values $\text{Calc}_i$ and $\text{Inflam}_i$ are estimated from the sum of the product of each arterial calcification marker $m$ (or inflammation marker $k$) by the weights $\xi$ and $\zeta$,as follows:
 
 $$
 \begin{align}
@@ -374,7 +376,7 @@ $$
 The model effectively performs a supervised dimensional reduction: markers receiving larger weights are those contributing more strongly to the prediction of BMD.
 Because the markers are standardized prior to analysis, the simplex weights can be interpreted as the relative contribution of each marker to the predictive composite. Figure S \@ref(fig:weights) shows the posterior estimates for $\xi$ and $\zeta$ for each marker.
 
-```{r weights, eval=TRUE, fig.cap= "Simplex weights that represent the relative contribution of each marker to the predictive composite, for arterial calcification (A), and inflammation (B). Shown are means and 89% PI intervals of posterior coefficient estimates from model 1 in Table S4 (N = 453).",  fig.height=3, fig.fullwidth=TRUE, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)}
+```{r weights, eval=TRUE, fig.cap= "Simplex weights that represent the relative contribution of each marker to the predictive composite, for arterial calcification (A), and inflammation (B). Shown are means and 89% PI intervals of posterior coefficient estimates from model 1 in Table S44 (N = 453).",  fig.height=3, fig.fullwidth=TRUE, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)}
 
 par(mfrow = c(1,2),mgp = c(1.5, 0.5, 0), mar = c(2.5, 2.2, 2, 1) + 0.1)
 
@@ -404,14 +406,13 @@ mtext("B", side = 3, line = 0, at = 0 )
 
 ```
 
-For all analyses where arterial calcification and inflammation are considered as covariates, we estimate the composite scores, effectively integrating information from all markers. When arterial calcification and inflammation are predictors, we provide results both from models that include the composite score, and from models that are fit using each marker separately, generating up to 3x4 sets of results (see Tables \@ref(tabbymarkercrp)-\@ref(tabbymarkertnfa)).
-
+For all analyses where arterial calcification and inflammation are considered as covariates, we estimate the composite scores, effectively integrating information from all markers. When arterial calcification and inflammation are predictors, we provide results both from models that include the composite score, and from models that are fit using each marker separately, generating up to 3x4 sets of results.
 
 When only one marker is included, the simplex reduces automatically to a weight of one, causing the composite to collapse to the observed variable itself. This allows the same model specification to flexibly accommodate both single-marker and multi-marker analyses.
 
-Figures \@ref(calcmarkers) and \@ref(inflammarkers) compare how BMD is expected to vary with each arterial calcification \@ref(calcmarkers) and inflammation marker \@ref(inflammarkers), respectively, according to a model that includes them all through the composite (left side), to a set of models that estimate the effect of one marker at a time (right side).
+Figures S\@ref(calcmarkers) and S\@ref(inflammarkers) compare how BMD is expected to vary with each arterial calcification and inflammation marker, respectively, according to a model that includes them all through the composite (left side), to a set of models that estimate the effect of one marker at a time (right side).
 
-```{r calcmarkers, fig.cap = "Comparing counterfactual prediction curves for arterial calcification markers from a model that includes all markers (left panels, where they are computed as a proportion ξ of total effect β₂) vs. models estimating them one at a time (right panels, where the effect is determined by β₂ onl, N = 453).",  fig.height=6, fig.fullwidth=TRUE, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)}
+```{r calcmarkers, fig.cap = "Comparing counterfactual prediction curves for arterial calcification markers from a model that includes all markers (left panels, where they are computed as a proportion ξ of total effect β₂) vs. models estimating them one at a time (right panels, where the effect is determined by β₂ only, N = 453).",  fig.height=6, fig.fullwidth=TRUE, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)}
 #####################################################
 #extract posterior samples from fit of four different models (all calcification, cac, tac, aac)
 
@@ -462,7 +463,7 @@ for(v in calc_vars){
 
 
 
-```{r inflammarkers, fig.cap = "Comparing counterfactual prediction curves for inflammation biomarkers from a model that includes all biomarkers (left panels, where they are computed as a proportion ζ of total effect θ) vs. models estimating them one at a time (right panels, where the effect is determined by θ onl, N = 340).", fig.height=8, fig.fullwidth=TRUE, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)}
+```{r inflammarkers, fig.cap = "Comparing counterfactual prediction curves for inflammation biomarkers from a model that includes all biomarkers (left panels, where they are computed as a proportion ζ of total effect θ) vs. models estimating them one at a time (right panels, where the effect is determined by θ onl, N = 340; complete cases only).", fig.height=8, fig.fullwidth=TRUE, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)}
 
 ###############################
 # look at inflammation markers#
@@ -528,7 +529,7 @@ $$
 In a few cases, where one of the three cytokines was available, this available marker was ignored and imputed as if missing, as code and computation would have required unreasonably higher effort for the additional precision gained.
 
 The posterior for the missing values does not update meaningfully, as expected, and remains substantially close to a standard normal distribution.
-Parameter posterior estimates change very little when imputing, but there are small gains in precision, see Figure S \@ref(fig:imputprecision). 
+Parameter posterior estimates change very little when imputing, but there are small gains in precision, see Figure S\@ref(fig:imputprecision). 
 
 ```{r imputprecision,  fig.cap = "Posterior estimates for main parameters estimated by imputing the missing values (N = 453) vs. the same model without imputation (N = 340).", fig.height=8, fig.fullwidth=TRUE, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)}
 #compare_param(post_c[["all"]], post_noimput, "epsilon", post1_label = "Imputed", post2_label = "Complete case")
@@ -560,11 +561,12 @@ All in all, the parametric imputation of the missing values allows the model to 
 
 ### Calcification as outcome
 
-*Estimands:* Model 4 (see Table \@ref(tablemodels)) permits the estimation of the direct effects of inflammation and thoracic fat, plus the covariates age and fat-free mass. By removing the inflammation parameters, in model 5, we can estimate the total effect of thoracic fat.
+*Estimands:* Model 4 (table S\@ref(tab:tablemodels)) permits estimation of the direct effects of inflammation and thoracic fat, plus the covariates age and fat-free mass. By removing the inflammation parameters, in model 5, we can estimate the total effect of thoracic fat.
 
 
 *Model specification(s):*
-In the following models, calcification is fit to a zero-inflated Poisson distribution. The zero-inflated component of the model accounts for the high proportion of zero values and estimates factors predicting calcification presence separately from those predicting severity. Moreover, such structure mirrors the two parameters used to estimate the role of calcification in BMD used in models 1 and 2b, consistent with the idea that processes leading to calcification onset may be different than those leading to increasing calcification severity. 
+In the following models, calcification is fit to a zero-inflated Poisson distribution. The zero-inflated component of the model accounts for the high proportion of zero values and estimates factors predicting arterial calcification presence separately from those predicting calcification severity. Moreover, such structure mirrors the two parameters used to estimate the role of calcification in BMD used in models 1 and 2b (table S\@ref(tab:tablemodels)), consistent with the idea that processes leading to arterial calcification onset may be different than those leading to increasing calcification severity. 
+
 $$
 \begin{align}
 Y_i &\sim \text{Zero-Inflated Poisson}(\pi_i,\lambda_i)\\
@@ -573,7 +575,8 @@ P(Y_i=y) &= (1-\pi_i) \frac{\lambda_i^y e^{-\lambda_i}}{y!}\\
 \qquad y&>0
 \end{align}
 $$
-The model then estimates the probability that an individual's calcification marker is equal to zero, $\pi$, and the mean of the Poisson distribution generating non-zero values, $\lambda$, separately. Each depends on a linear model, as shown below. 
+The model then estimates the probability that an individual's arterial calcification marker is equal to zero, $\pi$, and the mean of the Poisson distribution generating non-zero values, $\lambda$, separately. Each depends on a linear model, as shown below. 
+
 
 $$
 \begin{align}
@@ -594,9 +597,9 @@ $$
 $$
 To estimate the total effect of thoracic fat on arterial calcification, we estimate model 5, which does not adjust for inflammation.
 
-*Observation level random effects:* Note that the linear model corresponding to $\lambda$ includes the parameter $\upsilon_i$. This observation-level random effect models residual variability not explained by the predictors of calcification, thereby accommodating the substantial overdispersion and right skewness characteristic of calcification measures. 
+*Observation-level random effects:* Note that the linear model corresponding to $\lambda$ includes the parameter $\upsilon_i$. This observation-level random effect models residual variability not explained by the predictors of arterial calcification, thereby accommodating the substantial overdispersion and right skewness characteristic of calcification measures. 
 
-Figure \@ref(poissonfit) shows posterior prediction checks for the zero-inflated Poisson model. Posterior predictive simulations reproduced both the observed proportion of zeros and the highly right-skewed distribution of calcification scores, supporting the adequacy of the zero-inflated Poisson specification with observation-level random effects.
+Figure S\@ref(fig:poissonfit) shows posterior prediction checks for the zero-inflated Poisson model. Posterior predictive simulations reproduced both the observed proportion of zero values and the highly right-skewed distribution of arterial calcification scores, supporting the adequacy of the zero-inflated Poisson specification with observation-level random effects.
 
 ```{r poissonfit, fig.id="poissonfit", fig.cap= "Posterior prediction checks from the zero-inflated Poisson model with observation-level random effects (N = 453).", fig.height=6, fig.width=7, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)}
 par(mfrow = c(3, 3))
@@ -631,12 +634,12 @@ for(j in 1:3){
 
 *Priors:* All parameters are drawn from priors $\text{Normal} (0,1)$, except for the standard deviation of the pooled observation-level random effect $\upsilon$, which is drawn from a prior $\text{Half-Normal} (0,1)$ to limit overdispersion.
  
-Note that Models 4 and 5 (see Table \@ref(tablemodels)) are fit separately for each vascular bed. When adjusting for inflammation, a composite measure of inflammation was used. When inflammation was a predictor of interest, results are presented separately for each inflammatory biomarker.
+Note that Models 4 and 5 (Table S\@ref(tab:tablemodels)) are fit separately for each vascular bed. When adjusting for inflammation, a composite measure of inflammation was used. When inflammation was an exposure of interest, results are presented separately for each inflammatory biomarker.
 
 ### Inflammation as outcome
 
 *Estimands:*
-Model 6 (see Table \@ref(tablemodels)) permits estimation of the direct effect of thoracic fat on inflammation.
+Model 6 (Table S\@ref(tab:tablemodels)) permits estimation of the direct effect of thoracic fat on inflammation.
 
 *Model specification:*
 Inflammation is modeled as a normally distributed variable with mean $\mu$, determined by the following linear model:
@@ -662,7 +665,8 @@ Note that Model 6 was run separately for each inflammatory biomarker as an outco
 # Additional Results
 
 ## Descriptive results
-```{r corrs_tab, tab.id = "corrs_tab", tab.cap= "Inter-correlations among study variables, all individuals. Inflammatory biomarkers (#’s 4-7 below) and arterial calcification indicators (#’s 8-10) are logged. Spearman correlations are shown for non-normally distributed variables (i.e., IL-1β, TNF-α, and arterial calcification indicators; otherwise Pearson correlations are shown)."}
+
+```{r corrs_tab, tab.id = "corrs_tab", tab.cap= "Inter-correlations among study variables (pooled across sexes; complete cases only). Inflammatory biomarkers (#’s 4-7 below) and arterial calcification indicators (#’s 8-10) are logged. Spearman correlations are shown for non-normally distributed variables (i.e., IL-1β, TNF-α, and arterial calcification indicators; otherwise Pearson correlations are shown)."}
 vars <- c("age_z", "ffm_z", "thoracic_fat_z", "log_crp_mean_z", "log_il1b_cytokines_mean_z", "log_il6_cytokines_mean_z", "log_tnfa_cytokines_mean_z", "log_cac_z", "log_tac_z", "log_aortic_arch_ca_z", "bmd_z" )
 
 labels <- c("Age", "FFM", "Thoracic fat", "CRP (log)", "IL-1β (log)", "IL-6 (log)", "TNF-α (log)", "CAC (log)", "TAC (log)", "AAC (log)", "BMD")
@@ -697,7 +701,7 @@ tab_df <- cbind(Variable = paste0("(", seq_len(nvar), ") ", labels ), tab_df )
 ft <- flextable(tab_df)
 ft <- autofit(ft)
 ft <- set_caption(ft, caption = "Inter-correlations among study variables by sex.")
-ft <- add_footer_lines(ft, values = "Abbreviations: FFM: Fat-free mass; CRP: high-sensitivity C-reactive protein; IL-1β: interleukin-1β; IL-6: interleukin-6; TNF-α: tumor necrosis factor-α; CAC: coronary artery calcium; TAC: thoracic aortic calcium (i.e. ascending and descending aorta, omitting the aortic arch); AAC: aortic arch calcium; BMD: bone mineral density.")
+ft <- add_footer_lines(ft, values = "Abbreviations: FFM: Fat-free mass; CRP: high-sensitivity C-reactive protein; IL-1β: interleukin-1β; IL-6: interleukin-6; TNF-α: tumor necrosis factor-α; CAC: coronary artery calcium; TAC: thoracic aortic calcium (i.e. ascending and descending aorta, excluding the aortic arch); AAC: aortic arch calcium; BMD: bone mineral density.")
 
 ft
 ```
@@ -772,7 +776,7 @@ panel_vasc_cal_age
 ```
 
 
-```{r corrs_sexes, tab.id = "corrs_sexes", tab.cap= "Inter-correlations among study variables by sex. Female values are below the diagonal and male values are above. Spearman correlations are shown for non-normally distributed variables (i.e., IL-1β, TNF-α, and arterial calcification indicators; otherwise Pearson correlations are shown)."}
+```{r corrs_sexes, tab.id = "corrs_sexes", tab.cap= "Inter-correlations among study variables by sex (complete cases only). Female values are below the diagonal and male values are above. Spearman correlations are shown for non-normally distributed variables (i.e., IL-1β, TNF-α, and arterial calcification indicators; otherwise Pearson correlations are shown)."}
 
 # Split by sex
 dat_f <- subset(data_expand, male == 0)
@@ -824,9 +828,9 @@ ft
 
 ## Bone mineral density is inversely associated with arterial calcification, particularly in the thoracic aortic arch
 
-The following table S\@ref(tab:coeffs) reports posterior estimates for the coefficients of model 1 comparing models fit to differentiate between the sexes or not. 
+Table S\@ref(tab:coeffs) reports posterior estimates (89\% PI) for the coefficients of model 1, comparing models fit to differentiate between the sexes, or not. 
 
-```{r coeffs, tab.id = "coeffs", tab.cap="Model comparison of effects (model 1 with or without sex differences, N = 453, including composite estimation for both calcification and inflammation, and imputing missing inflammation). Note that sex 1 refers to females and sex 2 to males when the sexes are considered separately, while sex 1 refers to both sexes combined when all individuals are considered together (N = 453). ", results='asis'}
+```{r coeffs, tab.id = "coeffs", tab.cap="Model 1 comparison, with and without sex differences (N = 453, including composite estimation for both arterial calcification and inflammation, and imputing missing inflammation). Note that sex 1 refers to females and sex 2 to males when the sexes are considered separately, while sex 1 refers to both sexes combined when all individuals are considered together. ", results='asis'}
 pars <- c(
   "alpha",
   "beta1",
@@ -884,8 +888,8 @@ ft
 # )
 ```
 
-Just like the previous, the following table S\@ref(tab:coeffs_beds) reports posterior estimates for the coefficients of model 1 comparing models fit that differentiate between the sexes or not. Only, this time, the three arterial beds are considered separately. 
-```{r coeffs_beds, tab.id = "coeffs_beds",tab.cap="Model comparison of effects, by vascular bed (model 1 with or without sex differences, N = 453)."}
+Table S\@ref(tab:coeffs_beds) also reports posterior estimates (89\% PI) for model 1 coefficients, comparing a model that differentiates between the sexes to a model that does not, but here the three vascular beds are considered separately. 
+```{r coeffs_beds, tab.id = "coeffs_beds",tab.cap="Model 1 comparison by vascular bed, with and without sex differences (N = 453)."}
 calc_vars <- c("cac", "tac", "aac")
 pars <- c(
   "alpha",
@@ -935,9 +939,9 @@ ft
 
 
 ## Bone mineral density is inversely associated with inflammation
-The following Figure S \@ref(fig:inflamMarkersDirectIndirectByMarker) shows predicted BMD for varying values of each inflammation marker.
+Figure S\@ref(fig:inflamMarkersDirectIndirectByMarker) shows expected BMD across varying values of each inflammatory biomarker.
 
-```{r inflamMarkersDirectIndirectByMarker, fig.cap= "Expected BMD for varying levels of inflammation, by marker (model 1, each marker separately, N = 340)", fig.height=6, fig.fullwidth=TRUE, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)}
+```{r inflamMarkersDirectIndirectByMarker, fig.cap= "Expected BMD for varying levels of inflammatory biomarkers (model 1, each biomarker is considered separately, N = 340; complete cases only)", fig.height=6, fig.fullwidth=TRUE, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)}
 inflam_vars <- c("crp","il1b","il6","tnfa")
 inflam_varsC <- c("CRP","IL-1β","IL-6","TNF-α")
 seqalong <- seq(-4,4, length.out = 100)
@@ -989,8 +993,8 @@ for(v in inflam_vars){
 
 ```
 
-Table S\@ref(tab:tableDirectIndirectInflammation) reports coefficients from models 1 and 2a, comparing the direct and total effects of inflammation on BMD.  
-```{r tableDirectIndirectInflammation, tab.id = "tableDirectIndirectInflammation", tab.cap="Model comparison of effects full model to no calcification model (model 1 vs. 2a, N = 453)"}
+Table S\@ref(tab:tableDirectIndirectInflammation) reports possterior estimates (89\% PI) from models 1 and 2a, comparing the direct and total effects of inflammation on BMD.  
+```{r tableDirectIndirectInflammation, tab.id = "tableDirectIndirectInflammation", tab.cap="Model comparison of full model and excluding arterial calcification (model 1 vs. 2a, N = 453)"}
 
 pars <- c(
   "alpha",
@@ -1040,9 +1044,9 @@ ft
 
 ```
 
-The following four tables replicate Table S\@ref(tab:tableDirectIndirectInflammation) for models where each inflammation marker is analyzed separately.
+Tables S\@ref(tab:tab_infl_crp)-S\@ref(tab:tab_infl_tnfa) report posterior estimates (89\% PI) where each inflammatory biomarker is analyzed separately (again comparing model 1 vs. 2a, as shown in Table S\@ref(tab:tableDirectIndirectInflammation)).
 
-```{r tab_infl_crp, tab.cap="Posterior estimates comparing full BMD model to no calcification model, CRP only (N = 340).", tab.id="tab_infl_crp", tab.cap.style="Table Caption"}
+```{r tab_infl_crp, tab.cap="Model comparison, full model and excluding arterial calcification, CRP only (N = 340; complete cases only).", tab.id="tab_infl_crp", tab.cap.style="Table Caption"}
 inflam_varsC <- c("CRP","IL-1β","IL-6","TNF-α")
 for (i in c("crp", "il1b", "il6", "tnfa")) {
   ft <- flextable(build_infl_tab(i))
@@ -1063,7 +1067,7 @@ ft <- ft |>
 ft  
 ```
 
-```{r tab_infl_il1b, tab.cap="Posterior estimates comparing full BMD model to no calcification model, IL-1β only", tab.id="tab_infl_il1b", tab.cap.style="Table Caption"}
+```{r tab_infl_il1b, tab.cap="Model comparison, full model and excluding arterial calcification, IL-1β only (N = 340; complete cases only)", tab.id="tab_infl_il1b", tab.cap.style="Table Caption"}
 ft <-flextable(build_infl_tab("il1b"))
 ft <- ft |>
   autofit() |>
@@ -1074,7 +1078,7 @@ ft <- ft |>
 ft  
 ```
 
-```{r tab_infl_il6, tab.cap="Posterior estimates comparing full BMD model to no calcification model, IL-6 only", tab.id="tab_infl_il6", tab.cap.style="Table Caption"}
+```{r tab_infl_il6, tab.cap="Model comparison, full model and excluding arterial calcification, IL-6 only (N = 340; complete cases only)", tab.id="tab_infl_il6", tab.cap.style="Table Caption"}
 ft <-flextable(build_infl_tab("il6"))
 ft <- ft |>
   autofit() |>
@@ -1085,7 +1089,7 @@ ft <- ft |>
 ft  
 ```
 
-```{r tab_infl_tnfa, tab.cap="Posterior estimates comparing full BMD model to no calcification model, TNF-α only", tab.id="tab_infl_tnfa", tab.cap.style="Table Caption"}
+```{r tab_infl_tnfa, tab.cap="Model comparison, full model and excluding arterial calcification, TNF-α only (N = 340; complete cases only)", tab.id="tab_infl_tnfa", tab.cap.style="Table Caption"}
 ft <-flextable(build_infl_tab("tnfa"))
 ft <- ft |>
   autofit() |>
@@ -1099,9 +1103,9 @@ ft
 
 ## Bone mineral density is inversely associated with thoracic fat
 
-The following table shows the posterior mean and 89% PI for the main coefficients for models 1, 2a, 2b and 3.
+Table  S\@ref(tab:tableDirectIndirectThoracicfat) shows the posterior mean and 89% PI for the main coefficients for models 1, 2a, 2b and 3.
 
-```{r table_direct_indirect_thoracicfat, tab.id = "tableDirectIndirectThoracicfat", tab.cap="Model comparison of effects with or without calcification and/or inflammation (models 1, 2a, 2b and 3, N = 453)", warning=FALSE}
+```{r table_direct_indirect_thoracicfat, tab.id = "tableDirectIndirectThoracicfat", tab.cap="Model comparison , full model, excluding arterial calcification only, excluding inflammation only, and excluding both arterial calcification and inflammation (models 1, 2a, 2b and 3, N = 453)", warning=FALSE}
 
 pars <- c(
   "alpha",
@@ -1216,9 +1220,9 @@ ft
 
 ## Arterial calcification severity is more consistently associated with inflammation than calcification presence
 
-Note that models are run separately for each calcification marker.
+Note that models are run separately for each arterial calcification marker.
 
-Poisson results, expected calcification at varying levels of inflammation composite, full model 4:
+Table S\@ref(tab:tablecalcinfl) shows results from zero-inflated Poisson models of arterial calcification with observation-level random effects. 
 
 ```{r infcompCalc, fig.cap="Expected calcification at varying levels of thoracic fat (models 4 N = 453)", fig.height=2, fig.fullwidth=TRUE, dpi = dpi_val, dev.args = list(pointsize = pointsizeval), message=FALSE, eval=FALSE}
 par(
@@ -1305,7 +1309,7 @@ for(v in calc_vars){
 ```
 
 
-```{r table_calc-infl, tab.id = "tablecalcinfl", tab.cap="Model comparison of effects by arterial bed (model 4, N = 453).", message=FALSE}
+```{r table_calc-infl, tab.id = "tablecalcinfl", tab.cap="Estimated associations between the inflammation composite score and arterial calcification presence and severity (model 4, N = 453).", message=FALSE}
 calc_vars <-c( "cac", "tac", "aac")
 pars <- c("alpha",
           "gamma",
@@ -1356,6 +1360,7 @@ ft
 
 ```
 
+Tables S\@ref(tab:tabbymarkercrp)-S\@ref(tab:tabbymarkertnfa) similarly show results from zero-inflated Poisson models of arterial calcification with observation-level random effects, where each inflammatory biomarker is analyzed separately. 
 
 ```{r fig_3x4_calc-inf_by_marker, fig.cap="Expected arterial calcification by vascular bed at varying levels of inflammation, by inflammatory biomarker, N = 453.", fig.height=8, fig.fullwidth=TRUE, dpi = dpi_val, dev.args = list(pointsize = pointsizeval), eval=FALSE}
 
@@ -1400,8 +1405,7 @@ for(i in inflam_vars){
 ```
 
 
-Coefficients of model 4 by inflammation marker.
-```{r table_calc_bymarker_CRP, tab.id = "tabbymarkercrp", tab.cap="Model comparison of effects on each arterial bed, CRP only (model 4, N = 340)."}
+```{r table_calc_bymarker_CRP, tab.id = "tabbymarkercrp", tab.cap="Estimated associations between CRP and arterial calcification presence and severity (model 4, N = 340; complete cases only)."}
 inflam_vars <- c("crp","il1b","il6","tnfa")
 calc_vars <-c( "cac", "tac", "aac")
 pars <- c("alpha",
@@ -1453,14 +1457,15 @@ ft_tnfa <- ft_tnfa |>
 ft_crp
 
 ```
-```{r table_calc_bymarker_ilb, tab.id = "tabbymarkeril1b", tab.cap="Model comparison of effects on each arterial bed, IL-1β only (model 4, N = 340)."}
+
+```{r table_calc_bymarker_ilb, tab.id = "tabbymarkeril1b", tab.cap="Estimated associations between IL-1β and arterial calcification presence and severity (model 4, N = 340; complete cases only)."}
 ft_il1b
 ```
-```{r table_calc_bymarker_il6, tab.id = "tabbymarkeril6", tab.cap="Model comparison of effects on each arterial bed, IL-6 only (model 4, N = 340)."}
+```{r table_calc_bymarker_il6, tab.id = "tabbymarkeril6", tab.cap="Estimated associations between IL-6 and arterial calcification presence and severity (model 4, N = 340; complete cases only)."}
 ft_il6
 
 ```
-```{r table_calc_bymarker_tnfa, tab.id = "tabbymarkertnfa", tab.cap="Model comparison of effects on each arterial bed, TNF-α only (model 4, N = 340)."}
+```{r table_calc_bymarker_tnfa, tab.id = "tabbymarkertnfa", tab.cap="Estimated associations between TNF-α and arterial calcification presence and severity (model 4, N = 340; complete cases only)."}
 ft_tnfa
 
 ```
@@ -1512,12 +1517,9 @@ ft_tnfa
 
 ## Arterial calcification is differentially associated with thoracic fat across vascular beds and by calcification stage
 
-Comparing variation of expected calcification at varying levels of thoracic fat, direct vs. total effect (models 4 and 5).
+Table S\@ref(tab:tableCalcNoinfl) shows results from zero-inflated Poisson models of arterial calcification with observation-level random effects total effect of thoracic fat (excluding inflammation), model 5.
 
-
-
-
-```{r tableCalcNoinfl, tab.id = "tableCalcNoinfl", tab.cap="Model coefficients by arterial bed, not adjusted by inflammation (model 5, N = 453).", message=FALSE}
+```{r tableCalcNoinfl, tab.id = "tableCalcNoinfl", tab.cap="Estimated associations between thoracic fat and arterial calcification presence and severity (model 5, N = 453).", message=FALSE}
 calc_vars <-c( "cac", "tac", "aac")
 pars <- c("alpha",
           "gamma",
@@ -1533,8 +1535,8 @@ for (v in calc_vars){
               fits_5[[v]],
               pars
             ) |>
-            rename(!!paste("Effect of inflammation \n composite on", v) := estimate)
-   
+            rename(!!paste("Effect on", v) := estimate) #NOTE THAT CAC TAC AND AAC SHOULD BE IN CAPITALS!!!
+
     if(is.null(tab)){
         tab <- tmp
       } else {
@@ -1577,7 +1579,7 @@ ft
 
 ## Inflammation is not consistently associated with greater thoracic fat
 
-Expected inflammation, by marker, at varying levels of thoracic fat (model 6).
+Table S\@ref(tab:tablesInflammationOutcome) shows results from Gaussian linear regression (model 6).
 <!-- # ```{r infl_thofat,  fig.height=8, fig.fullwidth=TRUE, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)} -->
 <!-- # par(mfrow = c(4,2), -->
 <!-- #     mar = c(4,4,2,1) -->
@@ -1625,7 +1627,7 @@ Expected inflammation, by marker, at varying levels of thoracic fat (model 6).
 <!-- # ``` -->
 
 
-```{r tables_inflammation_outcome, tab.id = "tablesInflammationOutcome", tab.cap="Model comparison of effects by inflammation marker (model 6, N = 340)."}
+```{r tables_inflammation_outcome, tab.id = "tablesInflammationOutcome", tab.cap="Estimated associations between thoracic fat and each inflammatory biomarker (model 6, N = 340; complete cases only)."}
 inflam_vars <- c("crp","il1b","il6","tnfa")
 inflam_varC <- c("CRP","IL-1β","IL-6","TNF-α")
 pars <- c(
@@ -1688,10 +1690,10 @@ ft
 
 ## Comparison of adults with lower bone mineral density and arterial calcification to adults without both conditions
 
-Adults with both lower BMD (<1 SD below the sex-specific mean) and any mild calcification (i.e., CAC, TAC, or AAC score ≥1 and <100 AU; hereafter “group 1”) are, on average, 10 years older than those without both conditions (group 3) but otherwise have similar (≤10% difference) anthropometric and metabolic profiles (Table \@ref(threeGroupComparison)). Group 1 shows higher thoracic vertebral fracture prevalence (48% vs. 26%) and less land under cultivation (35%) than group 3, although group 1 is small (n=21) and shows high variability in land clearance. Those with lower BMD and moderate/severe calcification (score ≥100 AU; group 2) are older still, seven years older than group 1 and 17 years older than group 3, but are otherwise similar to group 1. Despite their old age, group 2 shows a lower fracture prevalence than group 1 and only slightly higher prevalence than group 3, suggesting no clear monotonic relationship between calcification severity and fracture risk. Group 2 is composed of more women than group 3 (60% vs. 46%), cultivates less land (40%), and has higher systolic (5%) and diastolic (3%) blood pressure.
+Adults with both lower BMD (<1 SD below the sex-specific mean) and any mild calcification (i.e., CAC, TAC, or AAC score ≥1 and <100 AU; hereafter “group 1”) are, on average, 10 years older than those without both conditions (group 3) but otherwise have similar (≤10% difference) anthropometric and metabolic profiles (Table \@ref(tab:threeGroupComparison)). Group 1 shows higher thoracic vertebral fracture prevalence (48% vs. 26%) and less land under cultivation (35%) than group 3, although group 1 is small (n=21) and shows high variability in land clearance. Those with lower BMD and any moderate/severe calcification (score ≥100 AU; group 2) are older still, seven years older than group 1 and 17 years older than group 3, but are otherwise similar to group 1. Despite their old age, group 2 shows a lower fracture prevalence than group 1 and only slightly higher prevalence than group 3, suggesting no clear monotonic relationship between arterial calcification severity and fracture risk. Group 2 is composed of more women than group 3 (60% vs. 46%), cultivates less land (40%), and has higher systolic (5%) and diastolic (3%) blood pressure.
 
 
-```{r threeGroupComparison, tab.id =  "threeGroupComparison", tab.cap= "Descriptive statistics for select demographic, anthropometric, metabolic, skeletal, and economic variables by degree of arterial calcification across vascular beds and bone mineral density (BMD). Group 1 includes adults with any mild calcification (i.e. CAC, TAC, or AAC score ≥1 and <100 AU) and low BMD. Low BMD is indicated by a thoracic vertebral BMD <1 SD below the sex-specific mean. Group 2 includes adults with any moderate or severe calcification (i.e. score ≥100 AU) and low BMD. Group 3 includes all other adults in the sample. Subjects with variable arterial calcification scores across vascular beds are grouped according to their highest score.", eval=FALSE}
+```{r threeGroupComparison, tab.id =  "threeGroupComparison", tab.cap= "Descriptive statistics for select demographic, anthropometric, metabolic, skeletal, and economic variables by degree of arterial calcification and BMD. Group 1 includes adults with any mild calcification (i.e. CAC, TAC, or AAC score ≥1 and <100 AU) and low BMD. Low BMD is indicated by a thoracic vertebral BMD <1 SD below the sex-specific mean. Group 2 includes adults with any moderate or severe arterial calcification (i.e. score ≥100 AU) and low BMD. Group 3 includes all other adults in the sample. Subjects with variable arterial calcification scores across vascular beds are grouped according to their highest score. Note that columns 1 to 3 show means (SD) or \%, while columns 4 to 6 show group differences (\% or percentage points).", eval=FALSE}
 
 
 #make table

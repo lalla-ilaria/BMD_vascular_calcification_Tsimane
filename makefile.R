@@ -18,6 +18,10 @@ mar <- c(4, 3, 0.5, 0.5)
 counterfactual_age <- 60
 gq <- list() #generated quantities
 
+
+warmup <- 500
+iter <- 1000
+
 source("0_functions.R")
 source("1_bis_simulate_data_to_test_code.R")
 #if original data are available

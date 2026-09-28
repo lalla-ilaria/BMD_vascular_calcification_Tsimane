@@ -1,8 +1,3 @@
-
-
-warmup <- 500
-iter <- 1000
-
 #1: BMD~all
 #gives direct effects of all predictors
 
