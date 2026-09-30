@@ -16,7 +16,7 @@ for (m in 1:length(calc_names)) {
     calc_vars = calc_names[m]
   )
   
-  fits_nosex[[ calc_names[m] ]] <- cstan( file= "models/1bmd-all_i_c_2beta_imput.stan" , data=dat_nosex , chains=4, cores = 4, warmup = warmup, iter = iter )
+  fits_nosex[[ calc_names[m] ]] <- cstan( file= "models/1bmd-all_i_c_2beta_imput.stan" , data=dat_nosex , chains=4, cores = 4, warmup = warmup, iter = iter, save_cmdstan_config=TRUE )
 }
 
 
@@ -77,7 +77,7 @@ for (m in 1:length(inflam_names)) {
 # )
 # 
 # fits_nosex_noimput <- cstan( file= "models/1bmd-all_i_c_2beta.stan" , data=dat_nosex_noimput , chains=4, cores = 4, warmup = 500, iter = 1000 )
-# precis(fits_nosex_noimput, 3, c("alpha", "beta1", "beta2", "gamma", "epsilon", "zeta", "eta", "theta", "xi", "sigma"))
+# precis(fits_nosex_noimput, 3, c("alpha", "beta1", "beta2", "gamma", "epsilon", "eta", "theta", "sigma"))
 
 
 dat_noimput <- make_dat(
@@ -85,8 +85,8 @@ dat_noimput <- make_dat(
   imput = FALSE
 )
 
-fits_noimput <- cstan( file= "models/1bmd-all_i_c_2beta.stan" , data=dat_noimput , chains=4, cores = 4, warmup = 500, iter = 1000 )
-# precis(dat_noimput, 3, c("alpha", "beta1", "beta2", "gamma", "epsilon", "zeta", "eta", "theta", "xi", "sigma"))
+fits_noimput <- cstan( file= "models/1bmd-all_i_c_2beta.stan" , data=dat_noimput , chains=4, cores = 4, , warmup = warmup, iter = iter )
+# precis(dat_noimput, 3, c("alpha", "beta1", "beta2", "gamma", "epsilon", "eta", "theta", "sigma"))
 
 
 #2
@@ -100,10 +100,10 @@ dat_nosex <- make_dat(
 )
 
 fits_2a <- cstan( file= "models/2a_bmd-nocalc_imput.stan" , data=dat_nosex , chains=4, cores = 4, warmup = warmup, iter = iter )
-#precis(fits_2a, 3, c("alpha", "gamma", "epsilon", "zeta", "eta", "theta", "sigma"))
+#precis(fits_2a, 3, c("alpha", "gamma", "epsilon", "eta", "theta", "sigma"))
 
 fits_2b <- cstan( file= "models/2b_bmd-noinf.stan" , data=dat_nosex , chains=4, cores = 4, warmup = warmup, iter = iter )
-#precis(fits_2b, 3, c("alpha", "beta1", "beta2", "gamma", "epsilon", "xi", "eta", "sigma"))
+#precis(fits_2b, 3, c("alpha", "beta1", "beta2", "gamma", "epsilon", "eta", "sigma"))
 
 
 #2 by inflammation marker
@@ -187,9 +187,9 @@ for (m in 1:length(calc_marks)) {
 
 # for (m in 1:length(calc_marks)) {
 #   print(calc_marks[m])
-#   print(precis(fits_4_nbz[[ calc_marks[m] ]], 2, c("alpha", "gamma", "epsilon", "zeta", "eta", "theta", "alpha_zero", "gamma_zero", "epsilon_zero", "eta_zero", "theta_zero", "phi")))
-#   print(precis(fits_4_pz[[ calc_marks[m] ]], 2, c("alpha", "gamma", "epsilon", "zeta", "eta", "theta", "alpha_zero", "gamma_zero", "epsilon_zero", "eta_zero", "theta_zero")))
-#   print(precis(fits_4_pzln[[ calc_marks[m] ]], 2, c("alpha", "gamma", "epsilon", "zeta", "eta", "theta", "alpha_zero", "gamma_zero", "epsilon_zero", "eta_zero", "theta_zero")))
+#   print(precis(fits_4_nbz[[ calc_marks[m] ]], 2, c("alpha", "gamma", "epsilon", "eta", "theta", "alpha_zero", "gamma_zero", "epsilon_zero", "eta_zero", "theta_zero", "phi")))
+#   print(precis(fits_4_pz[[ calc_marks[m] ]], 2, c("alpha", "gamma", "epsilon", "eta", "theta", "alpha_zero", "gamma_zero", "epsilon_zero", "eta_zero", "theta_zero")))
+#   print(precis(fits_4_pzln[[ calc_marks[m] ]], 2, c("alpha", "gamma", "epsilon", "eta", "theta", "alpha_zero", "gamma_zero", "epsilon_zero", "eta_zero", "theta_zero")))
 #   print(precis(fits_5[[ calc_marks[m] ]], 2, c("alpha", "gamma", "epsilon", "eta",  "alpha_zero", "gamma_zero", "epsilon_zero", "eta_zero")))
 # }
 

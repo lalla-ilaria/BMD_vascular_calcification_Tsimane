@@ -42,11 +42,6 @@ parameters {
   // residual SD
   real<lower=0> sigma;
   
-  // inflammation (Formative model)
-  simplex[I] zeta;
-  // calc
-  simplex[C] xi;
-  
   // Missing data
   vector[n_miss_inflam] il1b_miss;
   vector[n_miss_inflam]  il6_miss;
@@ -69,8 +64,8 @@ transformed parameters {
     inflam_complete[i,4] = tnfa_miss[j];
   }
   
-  inflam = inflam_complete * zeta;
-  calc = calc_markers * xi;
+  inflam = inflam_complete * rep_vector(1.0 / I, I);
+  calc = calc_markers * rep_vector(1.0 / C, C);
 
 }
 

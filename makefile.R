@@ -1,6 +1,9 @@
 #libraries
 library(rethinking)
 library(tidyverse)
+library(officedown)#to save as word file with refs
+library(officer)#to save word tables
+library(flextable)
 
 #plotting parameters
 malecol <- "turquoise4"
@@ -25,10 +28,10 @@ iter <- 1000
 source("0_functions.R")
 source("1_bis_simulate_data_to_test_code.R")
 #if original data are available
-#source("1_data_process.R")
+source("1_data_process.R")
 #to use simulated data
-data_to_use <- dat_sim
+#data_to_use <- dat_sim
 #to use real data (if available)
-#data_to_use <- all_dat
+data_to_use <- all_dat
 source("2_analysis.R")
 source("3_outcomes.R")

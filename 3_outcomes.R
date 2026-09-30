@@ -20,6 +20,10 @@ post_6 <- lapply(fits_6, extract.samples)
 calc_0.1 <- log10(1.1)
 #calc_100 <- log10(101)
 calc_400 <- log10(401)
+sd_calc <- list( cac = sd(data_to_use$log_cac, na.rm = TRUE),
+                 tac = sd(data_to_use$log_tac, na.rm = TRUE),
+                 aac = sd(data_to_use$log_aac, na.rm = TRUE))
+
 
 #Prep age for counterfactual construction
 #Prep age for counterfactual construction
@@ -40,7 +44,7 @@ gq <- list()
 
 gq <- gq_add(gq, name = "BMD_cont_calc0_0.1",
              interpretation = "mean and 89%PI of difference between BMD of average individual with no calcification and average individual with minimal calcification (0.1)",
-             draws = counterfactual_BMD(post_nosex[[1]], calc = c(0,0,0)) - counterfactual_BMD(post_nosex[[1]], calc = c(calc_0.1,0,0)),
+             draws = counterfactual_BMD(post_nosex[[1]], calc = c(0,0,0)) - counterfactual_BMD(post_nosex[[1]], calc = c(calc_0.1/sd_calc[[1]],0,0)),
              section = "no_sex")
 
 gq <- gq_add(gq, name = "BMD_slope_coeff_beta2",
@@ -55,14 +59,14 @@ nosex_markers <- list(cac = post_nosex[[2]], tac = post_nosex[[3]], aac = post_n
 for(marker_name in names(nosex_markers)){
   gq <- gq_add(gq, name = paste0("BMD_", marker_name, "_cont_calc0_400"),
                interpretation = paste0("mean and 89%PI of difference between BMD of average individual with no calcification and average individual with high risk calcification (400) in ", toupper(marker_name)),
-               draws = counterfactual_BMD(nosex_markers[[marker_name]], calc = 0) - counterfactual_BMD(nosex_markers[[marker_name]], calc = calc_400),
+               draws = counterfactual_BMD(nosex_markers[[marker_name]], calc = 0) - counterfactual_BMD(nosex_markers[[marker_name]], calc = calc_400/sd_calc[[marker_name]]),
                section = "no_sex")
 }
 
 for(marker_name in names(nosex_markers)){
   gq <- gq_add(gq, name = paste0("BMD_", marker_name, "_cont_calc0_0.1"),
                interpretation = paste0("mean and 89%PI of difference between BMD of average individual with no calcification and average individual with high risk calcification (400) in ", toupper(marker_name)),
-               draws = counterfactual_BMD(nosex_markers[[marker_name]], calc = 0) - counterfactual_BMD(nosex_markers[[marker_name]], calc = calc_0.1),
+               draws = counterfactual_BMD(nosex_markers[[marker_name]], calc = 0) - counterfactual_BMD(nosex_markers[[marker_name]], calc = calc_0.1/sd_calc[[marker_name]]),
                section = "no_sex")
 }
 
@@ -70,7 +74,7 @@ for(marker_name in names(nosex_markers)){
 for(marker_name in names(nosex_markers)){
   gq <- gq_add(gq, name = paste0("BMD_", marker_name, "_cont_calc0.1_400"),
                interpretation = paste0("mean and 89%PI of difference between BMD of average individual with no calcification and average individual with high risk calcification (400) in ", toupper(marker_name)),
-               draws = counterfactual_BMD(nosex_markers[[marker_name]], calc = calc_0.1) - counterfactual_BMD(nosex_markers[[marker_name]], calc = calc_400),
+               draws = counterfactual_BMD(nosex_markers[[marker_name]], calc = calc_0.1/sd_calc[[marker_name]]) - counterfactual_BMD(nosex_markers[[marker_name]], calc = calc_400/sd_calc[[marker_name]]),
                section = "no_sex")
 }
 
@@ -78,12 +82,12 @@ for(marker_name in names(nosex_markers)){
 
 gq <- gq_add(gq, name = "BMD_men_cont_BMD_calc0_0.1",
              interpretation = "mean and 89%PI of difference between BMD of average individual with no calcification and average men with minimal calcification (0.1)",
-             draws = counterfactual_BMD(post_c[[1]], sex = 2, calc = c(0,0,0)) - counterfactual_BMD(post_c[[1]], sex = 2, calc = c(calc_0.1,0,0)),
+             draws = counterfactual_BMD(post_c[[1]], sex = 2, calc = c(0,0,0)) - counterfactual_BMD(post_c[[1]], sex = 2, calc = c(calc_0.1/sd_calc[[1]],0,0)),
              section = "sex_stratified")
 
 gq <- gq_add(gq, name = "BMD_women_cont_BMD_calc0_0.1",
              interpretation = "mean and 89%PI of difference between BMD of average woman with no calcification and average individual with minimal calcification (0.1)",
-             draws = counterfactual_BMD(post_c[[1]], sex = 1, calc = c(0,0,0)) - counterfactual_BMD(post_c[[1]], sex = 1, calc = c(calc_0.1,0,0)),
+             draws = counterfactual_BMD(post_c[[1]], sex = 1, calc = c(0,0,0)) - counterfactual_BMD(post_c[[1]], sex = 1, calc = c(calc_0.1/sd_calc[[1]],0,0)),
              section = "sex_stratified")
 
 gq <- gq_add(gq, name = "BMD_slope_coeff_beta2_men",
@@ -106,7 +110,7 @@ for(sex_name in names(sex_labels)){
   for(marker_name in names(sex_markers)){
     gq <- gq_add(gq, name = paste0("BMD_", sex_name, "_", marker_name, "_cont_calc0_0.1"),
                  interpretation = paste0("mean and 89%PI of difference between BMD of average individual with no calcification and average", sex_name, "with low calcification (0.1) in ", toupper(marker_name)),
-                 draws = counterfactual_BMD(sex_markers[[marker_name]], sex = sex_labels[[sex_name]], calc = 0) - counterfactual_BMD(sex_markers[[marker_name]], sex = sex_labels[[sex_name]], calc = calc_0.1),
+                 draws = counterfactual_BMD(sex_markers[[marker_name]], sex = sex_labels[[sex_name]], calc = 0) - counterfactual_BMD(sex_markers[[marker_name]], sex = sex_labels[[sex_name]], calc = calc_0.1/sd_calc[[marker_name]]),
                  section = "sex_stratified")
   }
 }
@@ -116,7 +120,7 @@ for(sex_name in names(sex_labels)){
   for(marker_name in names(sex_markers)){
     gq <- gq_add(gq, name = paste0("BMD_", sex_name, "_", marker_name, "_cont_calc0.1_400"),
                  interpretation = paste0("mean and 89%PI of difference between BMD of average", sex_name, "with low calcification (0.1) and average individual with high risk calcification (400) in ", toupper(marker_name)),
-                 draws = counterfactual_BMD(sex_markers[[marker_name]], sex = sex_labels[[sex_name]], calc = calc_0.1) - counterfactual_BMD(sex_markers[[marker_name]], sex = sex_labels[[sex_name]], calc = calc_400),
+                 draws = counterfactual_BMD(sex_markers[[marker_name]], sex = sex_labels[[sex_name]], calc = calc_0.1/sd_calc[[marker_name]]) - counterfactual_BMD(sex_markers[[marker_name]], sex = sex_labels[[sex_name]], calc = calc_400/sd_calc[[marker_name]]),
                  section = "sex_stratified")
   }
 }
@@ -126,7 +130,7 @@ for(sex_name in names(sex_labels)){
   for(marker_name in names(sex_markers)){
     gq <- gq_add(gq, name = paste0("BMD_", sex_name, "_", marker_name, "_cont_calc0_400"),
                  interpretation = paste0("mean and 89%PI of difference between BMD of average", sex_name, "with no calcification and average individual with high risk calcification (400) in ", toupper(marker_name)),
-                 draws = counterfactual_BMD(sex_markers[[marker_name]], sex = sex_labels[[sex_name]], calc = 0) - counterfactual_BMD(sex_markers[[marker_name]], sex = sex_labels[[sex_name]], calc = calc_400),
+                 draws = counterfactual_BMD(sex_markers[[marker_name]], sex = sex_labels[[sex_name]], calc = 0) - counterfactual_BMD(sex_markers[[marker_name]], sex = sex_labels[[sex_name]], calc = calc_400/sd_calc[[marker_name]]),
                  section = "sex_stratified")
   }
 }
@@ -469,7 +473,7 @@ par(mfrow = c(2,2),
     mar = c(4,4,2,1)
 )
 inflam_vars <- c("crp","il1b","il6","tnfa")
-inflam_varsC <- c("CRP","IL-1??","IL-6","TNF-??")
+inflam_varsC <- c("CRP","IL-1β","IL-6","TNF-α")
 covariates <- list(age = counterfactual_age_zscore,
                    ffm = 0,
                    thoracic_fat = 0)

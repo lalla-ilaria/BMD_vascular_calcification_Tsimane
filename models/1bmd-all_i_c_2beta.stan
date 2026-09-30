@@ -38,10 +38,6 @@ parameters {
   // residual SD
   real<lower=0> sigma;
   
-  // inflammation (Formative model)
-  simplex[I] zeta;
-  // calc
-  simplex[C] xi;
 }
 
 transformed parameters {
@@ -49,8 +45,8 @@ transformed parameters {
   vector[N] inflam;
   vector[N] calc;
 
-  inflam = inflam_markers * zeta;
-  calc = calc_markers * xi;
+  inflam = inflam_markers * rep_vector(1.0 / I, I);
+  calc = calc_markers * rep_vector(1.0 / C, C);
 
 }
 

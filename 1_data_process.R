@@ -113,6 +113,9 @@ all_dat <- data.frame (
   log_cac = data_expand$log_cac,
   log_tac = data_expand$log_tac,
   log_aac = data_expand$log_aortic_arch_ca,
+  log_st_cac = data_expand$log_cac/sd(data_expand$log_cac, na.rm = TRUE),#this and the following standardize the arterial calcification variables so they are appropriately captured by the equal weights composite
+  log_st_tac = data_expand$log_tac/sd(data_expand$log_tac, na.rm = TRUE),
+  log_st_aac = data_expand$log_aortic_arch_ca/sd(data_expand$log_aortic_arch_ca, na.rm = TRUE),
   cac = data_expand$cac,
   tac = data_expand$tac,
   aac = data_expand$aortic_arch_ca

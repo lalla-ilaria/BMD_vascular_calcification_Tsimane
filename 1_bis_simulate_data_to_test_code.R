@@ -1,6 +1,9 @@
 #simulate tsimane bmd
 
+#define sample size
 N <- 100
+
+#simulate values as per DAG
 age_z <- rnorm(N, 0, 1)
 sex <- rbinom(N, 1, 0.5)
 diet <- rnorm(N, 0, 1)
@@ -23,6 +26,7 @@ tac <- (exp(log_tac)-1) * 60
 aac <- (exp(log_aac)-1) * 100
 bmd_z <- age_z * - ifelse(sex, 0.5, 0.3) + inflammation * - 0.1 + calcification * - 0.1 + rnorm(N, 0, 0.3)
 
+#generate list for data organization function
 dat_sim <- data.frame(
   age_z = age_z,
   sex = sex,
@@ -41,6 +45,7 @@ dat_sim <- data.frame(
   aac = aac
 )
 
+#make data
 dat <- make_dat(
   dat_sim, 
   imput = TRUE

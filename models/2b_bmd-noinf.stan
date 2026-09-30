@@ -35,15 +35,12 @@ parameters {
   // residual SD
   real<lower=0> sigma;
   
-  // calc
-  simplex[C] xi;
-  
 }
 
 transformed parameters {
 
   vector[N] calc;
-  calc = calc_markers * xi;
+  calc = calc_markers * rep_vector(1.0 / C, C);
 
 }
 

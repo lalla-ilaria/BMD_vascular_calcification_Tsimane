@@ -37,9 +37,6 @@ parameters {
   real eta_zero;
   real theta_zero;
 
-  // inflammation (Formative model)
-  simplex[I] zeta;
-
   // Missing data
   vector[n_miss_inflam] il1b_miss;
   vector[n_miss_inflam]  il6_miss;
@@ -61,7 +58,7 @@ transformed parameters {
     inflam_complete[i,4] = tnfa_miss[j];
   }
   
-  inflam = inflam_complete * zeta;
+  inflam = inflam_complete * rep_vector(1.0 / I, I);
 
 }
 

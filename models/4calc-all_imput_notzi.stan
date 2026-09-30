@@ -25,8 +25,6 @@ parameters {
   real eta; 
   real theta; 
   real<lower=0> phi; 
-  // inflammation 
-  simplex[I] zeta; 
   // Missing data 
   vector[n_miss_inflam] il1b_miss; 
   vector[n_miss_inflam] il6_miss; 
@@ -46,7 +44,7 @@ transformed parameters {
     inflam_complete[i,4] = tnfa_miss[j]; 
     } 
         
-  inflam = inflam_complete * zeta; 
+  inflam = inflam_complete * rep_vector(1.0 / I, I); 
 } 
 
 model {

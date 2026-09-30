@@ -37,24 +37,24 @@ make_dat <- function(df,
     age_z = df$age_z,
     ffm_z = df$ffm_z,
     thoracic_fat_z = df$thoracic_fat_z,
-    crp = df$log_crp_mean_z,
     miss_inflam = miss_inflam,
     n_miss_inflam = length(miss_inflam),
     inflam_markers = as.matrix(data.frame( crp = df$log_crp_mean_z,
                                            il1b = df$log_il1b_cytokines_mean_z,
                                            il6 = df$log_il6_cytokines_mean_z,
                                            tnfa = df$log_tnfa_cytokines_mean_z)),
+    #crp = df$log_crp_mean_z,
     #il1b = df$log_il1b_cytokines_mean_z,
     #il6 = df$log_il6_cytokines_mean_z,
     #tnfa = df$log_tnfa_cytokines_mean_z,
-    calc_markers = as.matrix(data.frame( cac = df$log_cac,
-                                         tac = df$log_tac,
-                                         aac = df$log_aac)),
+    calc_markers = as.matrix(data.frame( cac = df$log_st_cac,
+                                         tac = df$log_st_tac,
+                                         aac = df$log_st_aac)),
     any_calc = as.integer(df$log_cac > 0 |
                             df$log_tac > 0 |
                             df$log_aac > 0)
   )
-  
+  #substitutes standardized calcifications with raw values for certain analyses
   if(calc_vars == "raw_calc") dat$calc_markers = as.matrix(data.frame( cac = df$cac,
                                                                        tac = df$tac,
                                                                        aac = df$aac))
@@ -85,6 +85,24 @@ make_dat <- function(df,
   dat$I <- ncol(dat$inflam_markers)
   dat$C <- ncol(dat$calc_markers)
   
+  #make sure correct types of data for Stan
+  dat$N <- as.integer(dat$N)
+  dat$I <- as.integer(dat$I)
+  dat$C <- as.integer(dat$C)
+  dat$S <- as.integer(dat$S)
+  
+  dat$sex <- as.integer(dat$sex)
+  dat$miss_inflam <- as.integer(dat$miss_inflam)
+  dat$n_miss_inflam <- as.integer(dat$n_miss_inflam)
+  
+  dat$any_calc <- as.integer(dat$any_calc)
+  
+  dat$bmd_z <- as.numeric(dat$bmd_z)
+  dat$age_z <- as.numeric(dat$age_z)
+  dat$ffm_z <- as.numeric(dat$ffm_z)
+  dat$thoracic_fat_z <- as.numeric(dat$thoracic_fat_z)
+  dat$inflam_markers <- as.matrix(dat$inflam_markers)
+  dat$calc_markers <- as.matrix(dat$calc_markers)
   return(dat)
 }
 
@@ -167,14 +185,14 @@ rename_pars <- function(x){
   x <- gsub("theta$", "θ (Inflammation)", x)
   x <- gsub("eta$", "η (Thoracic fat)", x)
   
-  x <- gsub("xi\\[1\\]", "ξ (CAC weight)", x)
-  x <- gsub("xi\\[2\\]", "ξ (TAC weight)", x)
-  x <- gsub("xi\\[3\\]", "ξ (AAC weight)", x)
-  
-  x <- gsub("zeta\\[1\\]", "ζ (CRP weight)", x)
-  x <- gsub("zeta\\[2\\]", "ζ (IL-1β weight)", x)
-  x <- gsub("zeta\\[3\\]", "ζ (IL6 weight)", x)
-  x <- gsub("zeta\\[4\\]", "ζ (TNF-α weight)", x)
+  # x <- gsub("xi\\[1\\]", "ξ (CAC weight)", x)
+  # x <- gsub("xi\\[2\\]", "ξ (TAC weight)", x)
+  # x <- gsub("xi\\[3\\]", "ξ (AAC weight)", x)
+  # 
+  # x <- gsub("zeta\\[1\\]", "ζ (CRP weight)", x)
+  # x <- gsub("zeta\\[2\\]", "ζ (IL-1β weight)", x)
+  # x <- gsub("zeta\\[3\\]", "ζ (IL6 weight)", x)
+  # x <- gsub("zeta\\[4\\]", "ζ (TNF-α weight)", x)
   x <- gsub("alpha_zero\\[1\\]", "α₀ (ZI intercept,women)", x)
   x <- gsub("alpha_zero\\[2\\]", "α₀ (ZI intercept, men)", x)
   x <- gsub("gamma_zero\\[1\\]", "γ₀ (ZI Age, women)", x)
@@ -231,8 +249,8 @@ pretty_par_name <- function(par){
     eta = "η (Thoracic fat)",
     theta = "θ (Inflammation composite)",
     phi = "φ (Overdispersion)",
-    zeta = "ζ (Inflammation weights)",
-    xi = "ξ (Calcification weights)",
+    # zeta = "ζ (Inflammation weights)",
+    # xi = "ξ (Calcification weights)",
     alpha_zero = "α₀ (ZI intercept)",
     gamma_zero = "γ₀ (ZI age)",
     epsilon_zero = "ε₀ (ZI FFM)",
@@ -408,10 +426,11 @@ counterfactual_BMD <- function(post, sex = 1,
     if(inflam_composite){
       c_i <- inflam #run over composite inflammation
     } else {
-      c_i <- rowSums(post$zeta * 
-                       matrix(inflam,
-                              nrow = n_draws, ncol = length(inflam),
-                              byrow = TRUE))
+      c_i <- rowMeans(
+        matrix(
+          rep(inflam, each = n_draws),
+          nrow = n_draws,
+          ncol = length(inflam)))
     }#individual inflammation markers
   }#if model includes inflammation
   if("beta1" %in% names(post)){
@@ -419,11 +438,11 @@ counterfactual_BMD <- function(post, sex = 1,
       c_c <- calc
       presence <- 1
     } else { 
-      c_c <- rowSums(
-        post$xi *
-          matrix(calc,
-                 nrow = n_draws, ncol = length(calc),
-                 byrow = TRUE))
+      c_c <- rowMeans(
+        matrix(
+          rep(calc, each = n_draws),
+          nrow = n_draws,
+          ncol = length(calc)))
       presence <- as.numeric(sum(calc) > 0)
     }#individual calcification markers
   }#if model includes calcification
@@ -470,9 +489,11 @@ counterfactual_calc <- function(
     if(inflam_composite){
        c_i <- inflam
     } else {
-      c_i <- rowSums(
-        post$zeta *
-          matrix(inflam, nrow = n_draws, ncol = length(inflam), byrow = TRUE)
+      c_i <- rowMeans(
+        matrix(
+          rep(inflam, each = n_draws),
+          nrow = n_draws,
+          ncol = length(inflam))
       )}}
   
   # count process
