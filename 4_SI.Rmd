@@ -30,13 +30,25 @@ knitr::opts_chunk$set(echo = FALSE, cache = FALSE)
 #requires packages officedown and rvg to compile tables into word file
 library(rethinking)
 library(tidyverse)
-library(splines)
 library(dagitty)
 library(officedown)#to save as word file with refs
 library(officer)#to save word tables
 library(flextable)
 library(patchwork)
 library(cowplot)
+library(HDInterval)
+
+
+#make text red for review round 2
+redtext <- function(text, color = "red") {
+  officer::ftext(
+    text = as.character(text),
+    prop = officer::fp_text(color = color)
+  )
+}
+
+warmup <- 500
+iter <- 1000
 
 #plotting parameters
 malecol <- "turquoise4"
@@ -61,11 +73,11 @@ source("0_functions.R")
 #if testing the following code only
 source("1_bis_simulate_data_to_test_code.R")
 #if original data are available
-#source("1_data_process.R")
+source("1_data_process.R")
 #to use simulated data
-data_to_use <- dat_sim
+#data_to_use <- dat_sim
 #to use real data (if available)
-#data_to_use <- all_dat
+data_to_use <- all_dat
 
 
 ```
@@ -74,9 +86,9 @@ data_to_use <- dat_sim
 source("2_analysis.R")
 
 #Prep age for counterfactual construction
-age_mean <- 56
+#age_mean <- 56
 age_SD <- 10
-if(exists(data_expand)){
+if(exists("data_expand")){
   age_mean <- mean(data_expand$age)
   age_SD <- sd(data_expand$age)
 }
@@ -245,6 +257,7 @@ BMD_i &\sim \text{Normal}(\mu_i,\sigma) \\
 $$
 
 Alternative specifications remove both parameterizations relative to calcification (parameters $\beta_1$ and $\beta_2$, respectively signifying arterial calcification presence or absence, and calcification amount (in Agatston Units), model 2a), the parameter for inflammation $\theta$ (model 2b) and both sets of parameters (model 3, which includes only age, fat-free mass and thoracic fat as predictors). 
+<!-- Here we say agatston units when we're actually using log10 over SD log10 of it, maybe change? -->
 
 *Priors:* For all models we employ weakly regularizing priors:
 $$
@@ -264,15 +277,15 @@ We run most models with both specifications: looking both at the unified pattern
 <!-- $\gamma$ and the two $\beta$ parameters to vary between sexes. Additionally, we allow the intercept $\alpha$ ($\theta$ for inflammation, $\eta$  -->
 
 #### Calcification presence and amount are modelled separately {#betas}
-<!-- `r 100*round(1-sum(dat$any_calc)/dat$N, 2)`\%  -->
+<!-- `r 100*round(1-sum(dat$any_calc)/dat$N, 2)`%  -->
 Because different processes may lead to the initial onset of arterial calcification compared to calcification progression, we model separately the effect of having any calcification vs. the effect of subsequent increases in the amount of calcification (what we call “severity” throughout the paper). $\text{Any Calc}_i$_i is a binary indicator taking value 1 when any calcification is present and 0 otherwise (the value becomes 1 if any of the three calcification markers are present when markers are considered together, see section \@ref(composite)). In addition, $\text{Calc}_i$ represents calcification severity. Consequently, $\beta_1$ estimates the discontinuous change in BMD associated with calcification presence, while $\beta_2$ estimates the slope relating BMD to calcification severity among individuals with calcification.
 
 Figures representing predicted changes in BMD by varying amounts of calcification, such as Figure 2 (main text), represent both expected BMD of an individual with no calcification (on the left side of the figure, mean and 89% PI of the posterior distribution) and expected change in BMD with increasing calcification severity, as a counterfactual curve on the right.
 
 #### Composite calcification and inflammation parameters {#composite}
-Our measures of arterial calcification are based on three vascular beds: the coronary arteries, the ascending and descending thoracic aorta (excluding the thoracic aortic arch), and the thoracic aortic arch. Measures of inflammation are based on four serum biomarkers: CRP, IL-1β, IL-6, and TNF-α. We are interested in examining both individual vascular beds and inflammatory biomarkers, as well as overall measures of arterial calcification and inflammation. Composite measures may better capture more general patterns of arterial calcification and inflammation, whereas analyses of individual vascular beds and biomarkers may reveal heterogeneity in local associations. In order to combine the information provided by the different vascular beds and inflammatory biomarkers, we construct a composite measure of both arterial calcification and inflammation within the statistical model, jointly with the regression on BMD. This means that the model learns the combination of markers that is most predictive of variation in BMD conditional on the other covariates. As a consequence, the composites are outcome-oriented rather than purely descriptive of the covariance structure, and approximate the more general arterial calcification and inflammation burden. Figure S\@ref(fig:compositesdatapoints) shows the estimated composite values for arterial calcification and inflammation for all individuals in our sample and the estimated change in BMD with varying levels of the composites. 
+Our measures of arterial calcification are based on three vascular beds: the coronary arteries, the ascending and descending thoracic aorta (excluding the thoracic aortic arch), and the thoracic aortic arch. Measures of inflammation are based on four serum biomarkers: CRP, IL-1β, IL-6, and TNF-α. We are interested in examining both individual vascular beds and inflammatory biomarkers, as well as overall measures of arterial calcification and inflammation. Composite measures provide prespecified summaries of arterial calcification and inflammation, whereas analyses of individual vascular beds and inflammatory biomarkers may reveal heterogeneity in local associations. In order to combine the information provided by the different vascular beds and inflammatory biomarkers, we construct a composite measure of both arterial calcification and inflammation within the statistical model `r redtext("we calculate prespecified composite scores using equal weights for each marker")`. Figure S\@ref(fig:compositesdatapoints) shows the `r redtext("calculated")` composite values for arterial calcification and inflammation for all individuals in our sample and the estimated change in BMD with varying levels of the composites. 
 
-```{r compositesdatapoints, fig.cap= "Estimated composite values for arterial calcification (A) and inflammation (B). Mean and 89% PI of posterior estimates of an individual’s composites are shown by points and lines, color coded by sex (N = 453). The values of the points on the y axis correspond to observed BMD. They are superimposed to the counterfactual prediction curves showing estimated change in BMD with varying levels of the composite score, where the line represents the mean and the shaded area the 89% PI of the posterior distribution for the slope.",  fig.height=3, fig.fullwidth=TRUE, warning=FALSE, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)}
+```{r compositesdatapoints, fig.cap= "Composite values for arterial calcification (A) and inflammation (B). \redtext{Calculated} individual composite values are color coded by sex (N = 453). \redtext{Note that, in panel B, horizontal lines indicate 89% posterior intervals around imputed values for individuals for whom inflammatory markers are not available, see next section}. The values of the points on the y axis correspond to observed BMD. They are superimposed to the counterfactual prediction curves showing estimated change in BMD with varying levels of the composite score, where the line represents the mean and the shaded area the 89% PI of the posterior distribution for the slope.",  fig.height=3, fig.fullwidth=TRUE, warning=FALSE, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)}
 par(mfrow = c(1,2),mgp = c(1.5, 0.5, 0), mar = c(2.5, 2.2, 2, 1) + 0.1)
 covariates <- list(calc = c(0, 0, 0),
                    age = counterfactual_age_zscore,
@@ -280,7 +293,12 @@ covariates <- list(calc = c(0, 0, 0),
                    thoracic_fat = 0,
                    inflam = c(0,0,0,0),
                    calc_composite = TRUE)
-
+dat_c <- make_dat(
+    data_to_use,
+    imput = TRUE,
+    inflam_vars = "all",
+    calc_vars = "all"
+  )
 plot_counterfactual_sex(
   post = post_c[["all"]],
   vary = "calc",
@@ -291,7 +309,7 @@ plot_counterfactual_sex(
   ylim = c(-2.5,3),
   latent_points = TRUE,
   latent_var = "calc",
-  dat = dat
+  dat = dat_c
 )
 mtext("A", side = 3, line = 0, at = 0 )
 legend_ribbon(x0 = 2, y0 = 2.5,
@@ -316,19 +334,20 @@ plot_counterfactual_sex(
   ylim = c(-2.5,3),
   latent_points = TRUE,
   latent_var = "inflam",
-  dat = dat
+  dat = dat_c
 )
 mtext("B", side = 3, line = 0, at = -2 )
 
 ```
 
-Note that composite scores correlate strongly with all arterial calcification markers (left column in Figure S\@ref(fig:covairancecalc) below).
+Figures \@ref(fig:covairancecalc) and \@ref(fig:inflam_markers_collinearity) `r redtext("show correlation of the different arterial calcification and inflammation biomarkers between each other and to their respective composite.")`
+
 
 ```{r covairancecalc, fig.cap= "Covariance between arterial calcification measures (from the coronary arteries (CAC), the ascending and descending thoracic aorta (excluding the thoracic aortic arch; TAC), and the aortic arch; AAC) and the calcification composite score (N = 453).", warning=FALSE, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)}
 calc_comp <- colMeans(post_c[[1]]$calc)
 
 pairs(
-  cbind(calc_comp, dat$calc_markers[,1:3]),
+  cbind(calc_comp, dat_c$calc_markers[,1:3]),
   labels = c("composite","CAC","TAC","AAC"),
   lower.panel = panel.cor,
   upper.panel = panel.smooth,
@@ -354,65 +373,41 @@ pairs(
 )
 ```
 
-The composite measures are built multiplying the markers' values by weights, which are drawn from a simplex distribution. The composite values $\text{Calc}_i$ and $\text{Inflam}_i$ are estimated from the sum of the product of each arterial calcification marker $m$ (or inflammation marker $k$) by the weights $\xi$ and $\zeta$,as follows:
+
+`r redtext("Each inflammation biomarker was standardized separately and the composite was calculated as the equal-weight mean:")`
 
 $$
-\begin{align}
-Calc_i &= \sum_{m=1}^{M} \xi_m \, Calcification\, Marker_{im}\\
-Inflam_i &= \sum_{k=1}^{I} \zeta_k \, Inflammation\, Marker_{ik}
-\end{align}
+\mathrm{Inflam}_i =
+\frac{1}{4}
+\left(
+z_{\mathrm{CRP},i}
++z_{\mathrm{IL1\beta},i}
++z_{\mathrm{IL6},i}
++z_{\mathrm{TNF\alpha},i}
+\right).
 $$
 
-
-Note that the weights $\xi$ and $\zeta$ are drawn from Dirichelet distributions, which makes them simplexes, i.e. they have to sum to one.
+`r redtext("For calcification, each log-transformed marker (base 10) was divided by its sample SD without mean-centering, and the composite was calculated as:")`
 
 $$
-\begin{align}
-\zeta &\sim \mathrm{Dirichlet}(1,\ldots,1)\\ 
-\xi &\sim \mathrm{Dirichlet}(1,\ldots,1)
-\end{align}
+\mathrm{Calc}_i =
+\frac{1}{3}
+\left(
+\frac{\log(1+\mathrm{CAC}_i)}{s_{\mathrm{CAC}}}
++\frac{\log(1+\mathrm{TAC}_i)}{s_{\mathrm{TAC}}}
++\frac{\log(1+\mathrm{AAC}_i)}{s_{\mathrm{AAC}}}
+\right).
 $$
 
-The model effectively performs a supervised dimensional reduction: markers receiving larger weights are those contributing more strongly to the prediction of BMD.
-Because the markers are standardized prior to analysis, the simplex weights can be interpreted as the relative contribution of each marker to the predictive composite. Figure S \@ref(fig:weights) shows the posterior estimates for $\xi$ and $\zeta$ for each marker.
+`r redtext("This scaling preserves zero as zero calcification.")`
 
-```{r weights, eval=TRUE, fig.cap= "Simplex weights that represent the relative contribution of each marker to the predictive composite, for arterial calcification (A), and inflammation (B). Shown are means and 89% PI intervals of posterior coefficient estimates from model 1 in Table S44 (N = 453).",  fig.height=3, fig.fullwidth=TRUE, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)}
+For all analyses where arterial calcification and inflammation are considered as covariates, `r redtext("we we calculate fixed composite scores from the observed marker values,")` effectively integrating information from all markers. When arterial calcification and inflammation are predictors, we provide results both from models that include the composite score, and from models that are fit using each marker separately, generating up to 3x4 sets of results.
 
-par(mfrow = c(1,2),mgp = c(1.5, 0.5, 0), mar = c(2.5, 2.2, 2, 1) + 0.1)
+When only one marker is included, `r redtext("the equal-weight composite reduces to that observed variable itself")`. This allows the same model specification to flexibly accommodate both single-marker and multi-marker analyses.
 
-inflam_names <- c("CRP", "IL1β", "IL6", "TNFα")
-calc_names <- c("CAC","TAC","AAC")
+Figures S\@ref(calcmarkers) and S\@ref(inflammarkers) compare how BMD is expected to vary with each arterial calcification and inflammation marker, respectively, `r redtext("from a set of models that estimate the effect of one marker at a time.")`
 
-plot(NULL, xlim = c(0,1), ylim = c(0.5, 3.5), xlab = "ξ (Calcification weights)", ylab = "", yaxt='n' )
-
-for(i in 3:1){
-
-  lines( PI(post_c[[1]]$xi[,i]), rep(i, 2), lwd = 3, col = directcol)
-  points( mean(post_c[[1]]$xi[,i]), i , pch = 16, cex = 2, col = partialcol2 )
-}
-  axis(side = 2, at = 3:1, labels = calc_names, las = 2)
-mtext("A", side = 3, line = 0, at = 0 )
-
-plot(NULL, xlim = c(0,1), ylim = c(0.5, 4.5), xlab = "ζ (Inflammation weights)", ylab = "", yaxt='n' )
-
-for(i in 4:1){
-
-  lines( PI(post_c[[1]]$zeta[,i]), rep(i, 2), lwd = 3, , col = directcol)
-  points( mean(post_c[[1]]$zeta[,i]), i , pch = 16, cex = 2, col = partialcol2  )
-}
-  axis(side = 2, at = 4:1, labels = inflam_names, las = 2)
-mtext("B", side = 3, line = 0, at = 0 )
-
-
-```
-
-For all analyses where arterial calcification and inflammation are considered as covariates, we estimate the composite scores, effectively integrating information from all markers. When arterial calcification and inflammation are predictors, we provide results both from models that include the composite score, and from models that are fit using each marker separately, generating up to 3x4 sets of results.
-
-When only one marker is included, the simplex reduces automatically to a weight of one, causing the composite to collapse to the observed variable itself. This allows the same model specification to flexibly accommodate both single-marker and multi-marker analyses.
-
-Figures S\@ref(calcmarkers) and S\@ref(inflammarkers) compare how BMD is expected to vary with each arterial calcification and inflammation marker, respectively, according to a model that includes them all through the composite (left side), to a set of models that estimate the effect of one marker at a time (right side).
-
-```{r calcmarkers, fig.cap = "Comparing counterfactual prediction curves for arterial calcification markers from a model that includes all markers (left panels, where they are computed as a proportion ξ of total effect β₂) vs. models estimating them one at a time (right panels, where the effect is determined by β₂ only, N = 453).",  fig.height=6, fig.fullwidth=TRUE, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)}
+```{r calcmarkers, fig.cap = "\redtext{Counterfactual prediction curves for arterial calcification markers from models estimating each one at a time (N = 453)}.",  fig.height=6, fig.width=4, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)}
 #####################################################
 #extract posterior samples from fit of four different models (all calcification, cac, tac, aac)
 
@@ -426,26 +421,26 @@ covariates <- list(calc = 0,
 calc_vars <- c("cac", "tac", "aac")
 
 #prepare plot layout
-par(mfrow = c(length(calc_vars), 2), mgp = c(1.5, 0.5, 0), mar = c(2.5, 2.2, 2, 1) + 0.1
+par(mfrow = c(length(calc_vars), 1), mgp = c(1.5, 0.5, 0), mar = c(2.5, 2.2, 2, 1) + 0.1
 )
 seqalong_c <- seq(0,4, length.out = 100)
 for(v in calc_vars){
   
   idx <- match(v, calc_vars)
-  covariates$calc <- c(0,0,0)
-  plot_counterfactual_sex(
-    post = post_c[["all"]],
-    vary = "calc",
-    vary_seq = lapply(seqalong_c, function(x){
-      z <- c(0,0,0)
-      z[idx] <- x / mean(post_c[["all"]]$xi[,idx])#vary the overall calcification composite through this biomarker
-      z }),
-    covariates = covariates,
-    xlab = paste(v, "(log)"),
-    xlim = c(0,3.5),
-    main = paste(v, "- all markers")
-  )
-  points(dat$calc_markers[,idx], dat$bmd_z, col = adjustcolor(cols[dat$sex], 0.3), pch = 16)
+  # covariates$calc <- c(0,0,0)
+  # plot_counterfactual_sex(
+  #   post = post_c[["all"]],
+  #   vary = "calc",
+  #   vary_seq = lapply(seqalong_c, function(x){
+  #     z <- c(0,0,0)
+  #     z[idx] <- x #vary the overall calcification composite through this biomarker
+  #     z }),
+  #   covariates = covariates,
+  #   xlab = paste(v, "(log)"),
+  #   xlim = c(0,3.5),
+  #   main = paste(v, "- all markers")
+  # )
+  # points(dat_c$calc_markers[,idx], dat_c$bmd_z, col = adjustcolor(cols[dat_c$sex], 0.3), pch = 16)
   
   covariates$calc <- c(0)
   plot_counterfactual_sex(
@@ -457,13 +452,14 @@ for(v in calc_vars){
     xlim = c(0,3.5),
     main = paste(v, "- single marker")
   )
-  points(dat$calc_markers[,idx], dat$bmd_z, col = adjustcolor(cols[dat$sex], 0.3), pch = 16)
+  points(dat_c$calc_markers[,idx], dat_c$bmd_z, col = adjustcolor(cols[dat_c$sex], 0.3), pch = 16)
+  mtext(LETTERS[idx], side = 3, line = 0, at = -0.8 )
 }
 ```
 
 
 
-```{r inflammarkers, fig.cap = "Comparing counterfactual prediction curves for inflammation biomarkers from a model that includes all biomarkers (left panels, where they are computed as a proportion ζ of total effect θ) vs. models estimating them one at a time (right panels, where the effect is determined by θ onl, N = 340; complete cases only).", fig.height=8, fig.fullwidth=TRUE, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)}
+```{r inflammarkers, fig.cap = "\redtext{Counterfactual prediction curves for inflammation biomarkers from models estimating them one at a time (N = 340; complete cases only)}.", fig.height=8, fig.width=4, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)}
 
 ###############################
 # look at inflammation markers#
@@ -477,28 +473,28 @@ inflam_vars <- c("crp","il1b","il6","tnfa")
 seqalong <- seq(-4,4, length.out = 100)
 
 par(
-  mfrow = c(length(inflam_vars), 2),mgp = c(1.5, 0.5, 0), mar = c(2.5, 2.2, 2, 1) + 0.1)
+  mfrow = c(length(inflam_vars), 1),mgp = c(1.5, 0.5, 0), mar = c(2.5, 2.2, 2, 1) + 0.1)
 
 
 for(v in inflam_vars){
   
   idx <- match(v, inflam_vars)
   
-  # FULL MODEL
-  plot_counterfactual(
-    post = post_nosex_i[["all"]],
-    vary = "inflam",
-    vary_seq = lapply(seqalong, function(x){
-      z <- c(0,0,0,0)
-      z[idx] <- x / mean(post_nosex_i[["all"]]$zeta[, idx])
-      z
-    }),
-    covariates = covariates,
-    xlab = paste(v, "(z-score)"),
-    main = paste(v, "- all markers")
-  )
-    points(dat$inflam_markers[,idx], dat$bmd_z, col = adjustcolor(cols[dat$sex], 0.3), pch = 16)
-    mtext(LETTERS[idx*2-1], side = 3, line = 0, at = -2 )
+  # # FULL MODEL
+  # plot_counterfactual(
+  #   post = post_nosex_i[["all"]],
+  #   vary = "inflam",
+  #   vary_seq = lapply(seqalong, function(x){
+  #     z <- c(0,0,0,0)
+  #     z[idx] <- x
+  #     z
+  #   }),
+  #   covariates = covariates,
+  #   xlab = paste(v, "(z-score)"),
+  #   main = paste(v, "- all markers")
+  # )
+  #   points(dat_c$inflam_markers[,idx], dat_c$bmd_z, col = adjustcolor(cols_c[dat$sex], 0.3), pch = 16)
+  #   mtext(LETTERS[idx*2-1], side = 3, line = 0, at = -2 )
 
   # SINGLE MARKER MODEL
   plot_counterfactual(
@@ -509,8 +505,9 @@ for(v in inflam_vars){
     xlab = paste(v, "(z-score)"),
     main = paste(v, "- single marker")
   )
-    points(dat$inflam_markers[,idx], dat$bmd_z, col = adjustcolor(cols[dat$sex], 0.3), pch = 16)
-    mtext(LETTERS[idx*2], side = 3, line = 0, at = -2 )
+    points(dat_c$inflam_markers[,idx], dat_c$bmd_z, col = adjustcolor(cols[dat_c$sex], 0.3), pch = 16)
+    #mtext(LETTERS[idx*2], side = 3, line = 0, at = -2 )
+    mtext(LETTERS[idx], side = 3, line = 0, at = -2 )
 }
 
 
@@ -581,8 +578,8 @@ The model then estimates the probability that an individual's arterial calcifica
 $$
 \begin{align}
 \log(\lambda_i) &=
-\alpha_{i}
-+ \gamma_{i}\,\text{Age}_i
+\alpha_{s_i}
++ \gamma_{s_i}\,\text{Age}_i
 + \epsilon\,\text{FFM}_i
 + \eta\,\text{ThoracicFat}_i
 + \theta\,\text{Inflam}_i 
@@ -647,8 +644,8 @@ $$
 \begin{align}
 \text{Inflam}_{i} &\sim \text{Normal}(\mu_i,\sigma) \\
 \mu_i &=
-\alpha_{i}
-+\gamma_{i}\,\text{Age}_{i}
+\alpha_{s_i}
++\gamma_{s_i}\,\text{Age}_{i}
 +\epsilon\,\text{FFM}_{i}
 +\eta\,\text{ThoracicFat}_{i}
 \end{align}
@@ -828,7 +825,7 @@ ft
 
 ## Bone mineral density is inversely associated with arterial calcification, particularly in the thoracic aortic arch
 
-Table S\@ref(tab:coeffs) reports posterior estimates (89\% PI) for the coefficients of model 1, comparing models fit to differentiate between the sexes, or not. 
+Table S\@ref(tab:coeffs) reports posterior estimates (89% PI) for the coefficients of model 1, comparing models fit to differentiate between the sexes, or not. 
 
 ```{r coeffs, tab.id = "coeffs", tab.cap="Model 1 comparison, with and without sex differences (N = 453, including composite estimation for both arterial calcification and inflammation, and imputing missing inflammation). Note that sex 1 refers to females and sex 2 to males when the sexes are considered separately, while sex 1 refers to both sexes combined when all individuals are considered together. ", results='asis'}
 pars <- c(
@@ -838,9 +835,7 @@ pars <- c(
   "gamma",
   "epsilon",
   "eta",
-  "theta",
-  "zeta",
-  "xi"
+  "theta"
 )
 tab <-
     extract_precis(
@@ -888,7 +883,7 @@ ft
 # )
 ```
 
-Table S\@ref(tab:coeffs_beds) also reports posterior estimates (89\% PI) for model 1 coefficients, comparing a model that differentiates between the sexes to a model that does not, but here the three vascular beds are considered separately. 
+Table S\@ref(tab:coeffs_beds) also reports posterior estimates (89% PI) for model 1 coefficients, comparing a model that differentiates between the sexes to a model that does not, but here the three vascular beds are considered separately. 
 ```{r coeffs_beds, tab.id = "coeffs_beds",tab.cap="Model 1 comparison by vascular bed, with and without sex differences (N = 453)."}
 calc_vars <- c("cac", "tac", "aac")
 pars <- c(
@@ -936,7 +931,120 @@ ft
 # )
 ```
 
+`r redtext("To supplement previous results, we evaluated the posterior distribution of the counterfactual BMD contrast between values of BMD estimated for no calcification and values estimated for high calcification level of 400. For each vascular bed, the contrast was calculated as:")`
 
+$$
+\Delta_{0-400}
+=
+\mathrm{BMD}(400)-\mathrm{BMD}(0)
+$$
+`r redtext("where negative values indicate lower predicted BMD at calcification level 400. This contrast incorporates both components of the BMD model: the discontinuous difference associated with calcification presence and the additional association with increasing calcification severity.")`
+
+`r redtext("We used [−0.15,0.15] SD of BMD as a prespecified region of practical equivalence (ROPE). DESCRIBE RATIONALE FOR ROPE HERE. ")`
+
+```{r ROPE, fig.cap= "Posterior distributions of the counterfactual BMD contrast between values estimated for calcification level 400 and values estimated for no calcification. Negative values indicate lower predicted BMD at calcification level 400. Red vertical lines indicate the bounds of the [−0.15,0.15] SD region of practical equivalence (ROPE), the dashed vertical line indicates zero, and the horizontal black bar indicates the 89% posterior interval of the contrast (model 1, each biomarker is considered separately, N = 453)", fig.height=3, fig.width=7, fig.fullwidth=TRUE, dpi = dpi_val, dev.args = list(pointsize = pointsizeval)}
+
+# ------------------------------------------------------------
+# Settings
+# ------------------------------------------------------------
+rope <- c(-0.15, 0.15)
+
+# Use exactly the same transformation and SDs used to create the
+# calcification predictors passed to Stan.
+calc_400 <- log10(401)
+sd_calc <- c(
+  cac = sd(data_to_use$log_cac, na.rm = TRUE),
+  tac = sd(data_to_use$log_tac, na.rm = TRUE),
+  aac = sd(data_to_use$log_aac, na.rm = TRUE)
+)
+calc_400_scaled <- calc_400 / sd_calc
+
+
+post_beds <- list(
+  CAC = post_nosex[["cac"]],
+  TAC = post_nosex[["tac"]],
+  AAC = post_nosex[["aac"]]
+)
+
+contrast_draws <- tibble(
+  bed = names(post_beds),
+  draws = purrr::map2(
+    post_beds,
+    tolower(names(post_beds)),
+    get_0_400_contrast
+  )
+)
+
+summary_table <- contrast_draws |>
+  mutate(summary = purrr::map(draws, contrast_summary, rope = rope)) |>
+  unnest(summary)
+
+#print(summary_table)
+
+
+density_data <- contrast_draws |>
+  mutate(density = purrr::map(draws, make_density_data)) |>
+  unnest(density)
+
+# ------------------------------------------------------------
+# Compact Kruschke-style density panels
+# ------------------------------------------------------------
+# Red vertical lines mark the ROPE limits; the black horizontal bar
+# marks the 89% HDI; the dashed line marks the null value (0).
+
+hdi_data <- summary_table |>
+  transmute(
+    bed,
+    hdi_low,
+    hdi_high,
+    y = 0
+  )
+
+rope_data <- tibble(
+  xintercept = rope
+)
+
+p <- ggplot(density_data, aes(x = x, y = density)) +
+  geom_area(fill = directcol, alpha = 0.85, colour = NA) +
+  geom_vline(
+    data = rope_data,
+    aes(xintercept = xintercept),
+    colour = "#9B1C1C",
+    linewidth = 0.8
+  ) +
+  geom_vline(
+    xintercept = 0,
+    colour = "black",
+    linewidth = 0.5
+  ) +
+  geom_segment(
+    data = hdi_data,
+    aes(x = hdi_low, xend = hdi_high, y = 0, yend = 0),
+    linewidth = 3.5,
+    colour = "black",
+    lineend = "butt"
+  ) +
+  facet_wrap(~ bed, nrow = 1) +
+  coord_cartesian(xlim = c(-0.8, 0.8), expand = FALSE) +
+  labs(
+    x = "Mean difference in BMD (sd units)",
+    y = "Posterior density",
+    title = "Contrast BMD at calcification of 400 HU - no calcification"
+  ) +
+  theme_classic(base_size = 11) +
+  theme(
+    strip.background = element_blank(),
+    strip.text = element_text(face = "bold"),
+    panel.spacing = unit(1, "lines"),
+    plot.margin = margin(4, 4, 4, 4),
+    axis.text.x = element_text(size = 9)
+  )
+
+print(p)
+
+
+
+```
 
 ## Bone mineral density is inversely associated with inflammation
 Figure S\@ref(fig:inflamMarkersDirectIndirectByMarker) shows expected BMD across varying values of each inflammatory biomarker.
@@ -993,7 +1101,7 @@ for(v in inflam_vars){
 
 ```
 
-Table S\@ref(tab:tableDirectIndirectInflammation) reports possterior estimates (89\% PI) from models 1 and 2a, comparing the direct and total effects of inflammation on BMD.  
+Table S\@ref(tab:tableDirectIndirectInflammation) reports posterior estimates (89% PI) from models 1 and 2a, comparing the direct and total effects of inflammation on BMD.  
 ```{r tableDirectIndirectInflammation, tab.id = "tableDirectIndirectInflammation", tab.cap="Model comparison of full model and excluding arterial calcification (model 1 vs. 2a, N = 453)"}
 
 pars <- c(
@@ -1001,8 +1109,7 @@ pars <- c(
   "gamma",
   "epsilon",
   "eta",
-  "theta",
-  "zeta"
+  "theta"
 )
 tab <-
     extract_precis(fits_nosex[[1]], pars) |>
@@ -1044,7 +1151,7 @@ ft
 
 ```
 
-Tables S\@ref(tab:tab_infl_crp)-S\@ref(tab:tab_infl_tnfa) report posterior estimates (89\% PI) where each inflammatory biomarker is analyzed separately (again comparing model 1 vs. 2a, as shown in Table S\@ref(tab:tableDirectIndirectInflammation)).
+Tables S\@ref(tab:tab_infl_crp)-S\@ref(tab:tab_infl_tnfa) report posterior estimates (89% PI) where each inflammatory biomarker is analyzed separately (again comparing model 1 vs. 2a, as shown in Table S\@ref(tab:tableDirectIndirectInflammation)).
 
 ```{r tab_infl_crp, tab.cap="Model comparison, full model and excluding arterial calcification, CRP only (N = 340; complete cases only).", tab.id="tab_infl_crp", tab.cap.style="Table Caption"}
 inflam_varsC <- c("CRP","IL-1β","IL-6","TNF-α")
@@ -1693,7 +1800,7 @@ ft
 Adults with both lower BMD (<1 SD below the sex-specific mean) and any mild calcification (i.e., CAC, TAC, or AAC score ≥1 and <100 AU; hereafter “group 1”) are, on average, 10 years older than those without both conditions (group 3) but otherwise have similar (≤10% difference) anthropometric and metabolic profiles (Table \@ref(tab:threeGroupComparison)). Group 1 shows higher thoracic vertebral fracture prevalence (48% vs. 26%) and less land under cultivation (35%) than group 3, although group 1 is small (n=21) and shows high variability in land clearance. Those with lower BMD and any moderate/severe calcification (score ≥100 AU; group 2) are older still, seven years older than group 1 and 17 years older than group 3, but are otherwise similar to group 1. Despite their old age, group 2 shows a lower fracture prevalence than group 1 and only slightly higher prevalence than group 3, suggesting no clear monotonic relationship between arterial calcification severity and fracture risk. Group 2 is composed of more women than group 3 (60% vs. 46%), cultivates less land (40%), and has higher systolic (5%) and diastolic (3%) blood pressure.
 
 
-```{r threeGroupComparison, tab.id =  "threeGroupComparison", tab.cap= "Descriptive statistics for select demographic, anthropometric, metabolic, skeletal, and economic variables by degree of arterial calcification and BMD. Group 1 includes adults with any mild calcification (i.e. CAC, TAC, or AAC score ≥1 and <100 AU) and low BMD. Low BMD is indicated by a thoracic vertebral BMD <1 SD below the sex-specific mean. Group 2 includes adults with any moderate or severe arterial calcification (i.e. score ≥100 AU) and low BMD. Group 3 includes all other adults in the sample. Subjects with variable arterial calcification scores across vascular beds are grouped according to their highest score. Note that columns 1 to 3 show means (SD) or \%, while columns 4 to 6 show group differences (\% or percentage points).", eval=FALSE}
+```{r threeGroupComparison, tab.id =  "threeGroupComparison", tab.cap= "Descriptive statistics for select demographic, anthropometric, metabolic, skeletal, and economic variables by degree of arterial calcification and BMD. Group 1 includes adults with any mild calcification (i.e. CAC, TAC, or AAC score ≥1 and <100 AU) and low BMD. Low BMD is indicated by a thoracic vertebral BMD <1 SD below the sex-specific mean. Group 2 includes adults with any moderate or severe arterial calcification (i.e. score ≥100 AU) and low BMD. Group 3 includes all other adults in the sample. Subjects with variable arterial calcification scores across vascular beds are grouped according to their highest score. Note that columns 1 to 3 show means (SD) or %, while columns 4 to 6 show group differences (% or percentage points).", eval=FALSE}
 
 
 #make table

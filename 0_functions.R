@@ -728,7 +728,7 @@ plot_counterfactual_sex <- function(
         latent_low[i], dat$bmd_z[i], latent_high[i], dat$bmd_z[i],
         col = adjustcolor(cols[dat$sex[i]], 0.3)
       )
-    }#latentpoints
+    }#latentpoints -> since changing to equal weights these error are zero except for estimated missing inflammation markers, for which uncertiainty is shown
     
     points(
       latent_mean, dat$bmd_z,
@@ -1024,4 +1024,56 @@ make_inflam_table <- function(inflam){
   }
   
   tab
+}
+
+
+###############################################################
+# Functions to check ROPE for difference between calcification#
+###############################################################
+
+
+
+# ------------------------------------------------------------
+# Posterior counterfactual contrast
+# ------------------------------------------------------------
+# delta = BMD(400) - BMD(0).
+# Negative values indicate lower BMD at calcification level 400.
+get_0_400_contrast <- function(post, bed, sex = 1) {
+  bmd_0 <- counterfactual_BMD(
+    post = post,
+    sex = sex,
+    calc = 0
+  )
+  
+  bmd_400 <- counterfactual_BMD(
+    post = post,
+    sex = sex,
+    calc = calc_400_scaled[[bed]]
+  )
+  
+  bmd_400 - bmd_0
+}
+
+# ------------------------------------------------------------
+# Posterior summaries
+# ------------------------------------------------------------
+contrast_summary <- function(draws, rope = c(-0.15, 0.15), prob = 0.89) {
+  hdi_interval <- HDInterval::hdi(draws, credMass = prob)
+  
+  tibble(
+    mean = mean(draws),
+    hdi_low = hdi_interval[1],
+    hdi_high = hdi_interval[2],
+    p_reduction_gt_rope = mean(draws < rope[1]),
+    p_in_rope = mean(draws >= rope[1] & draws <= rope[2]),
+    p_increase_gt_rope = mean(draws > rope[2])
+  )
+}
+
+# ------------------------------------------------------------
+# Density data
+# ------------------------------------------------------------
+make_density_data <- function(draws, n = 512) {
+  d <- density(draws, n = n)
+  tibble(x = d$x, density = d$y)
 }
